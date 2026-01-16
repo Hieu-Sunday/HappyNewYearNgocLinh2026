@@ -44,7 +44,6 @@
             transition: opacity 0.5s;
         }
         
-        /* Class mới để fade out mượt mà */
         .fade-out-transition {
             opacity: 0 !important;
             transition: opacity 1.5s ease-out;
@@ -119,6 +118,7 @@
         #loading {
             position: absolute; top: 60%; left: 50%; transform: translateX(-50%);
             font-family: 'Nunito', sans-serif; color: #fff; font-size: 1.2rem; display: none; z-index: 101;
+            text-align: center; width: 100%;
         }
     </style>
 </head>
@@ -184,7 +184,6 @@
             if(num === 1) AUDIO.count1.play();
         }
 
-        // Hàm helper để fade out âm thanh
         function fadeOutAudio(audio, duration = 1500) {
             if (audio.paused) return;
             const originalVolume = audio.volume;
@@ -198,7 +197,7 @@
                     audio.volume = 0;
                     audio.pause();
                     audio.currentTime = 0;
-                    audio.volume = originalVolume; // Reset volume cho lần sau
+                    audio.volume = originalVolume; 
                     clearInterval(fadeInterval);
                 }
             }, stepTime);
@@ -285,9 +284,9 @@
             constructor(startX, startY, targetY, type = 'normal') {
                 this.x = startX; this.y = startY; this.targetY = targetY; this.type = type;
                 
-                // CẬP NHẬT: Tốc độ bay chậm hơn cho big-opener để tạo cảm giác hồi hộp
+                // --- SỬA ĐỔI: Tăng tốc độ bay cho Big Opener ---
                 if (type === 'big-opener') {
-                    this.speed = 4.5; // Giảm từ 8 xuống 4.5
+                    this.speed = 4.5; // Tăng từ 4.5 lên 7 để bay nhanh hơn, giảm cảm giác lag
                 } else {
                     this.speed = Math.random() * 4 + 10;
                 }
@@ -304,9 +303,8 @@
                 if(!this.exploded) {
                     this.y -= this.speed; 
                     
-                    // CẬP NHẬT: Lực cản ít hơn cho big-opener để nó bay cao hơn và mượt hơn dù tốc độ chậm
                     if (this.type === 'big-opener') {
-                        this.speed *= 0.995; 
+                        this.speed *= 0.998; // Giảm lực cản để bay cao đều
                     } else {
                         this.speed *= 0.95;
                     }
@@ -403,11 +401,48 @@
         }
         animateCanvas();
 
-        startBtn.addEventListener('click', () => {
+        // --- HÀM PRELOAD ẢNH MỚI THÊM VÀO ---
+        let imagesLoaded = 0;
+        const totalImages = IMAGES.length;
+
+        function preloadAllImages() {
+            return new Promise((resolve) => {
+                if (totalImages === 0) resolve();
+                
+                IMAGES.forEach((src) => {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = () => {
+                        imagesLoaded++;
+                        // Cập nhật text loading để người dùng biết tiến độ
+                        loadingText.innerText = `Đang tải tài nguyên... ${Math.floor((imagesLoaded / totalImages) * 100)}%`;
+                        if (imagesLoaded === totalImages) resolve();
+                    };
+                    img.onerror = () => {
+                        imagesLoaded++; // Nếu lỗi cũng tính là xong để không treo
+                        if (imagesLoaded === totalImages) resolve();
+                    };
+                });
+            });
+        }
+
+        // --- SỬA LẠI SỰ KIỆN CLICK NÚT START ---
+        startBtn.addEventListener('click', async () => {
             AUDIO.bgIntro.play().catch(e => console.log("Cần tương tác người dùng để phát nhạc"));
-            landingScreen.style.opacity = 0; setTimeout(() => landingScreen.style.display = 'none', 500);
+            landingScreen.style.opacity = 0; 
+            setTimeout(() => landingScreen.style.display = 'none', 500);
+            
             loadingText.style.display = 'block';
-            initCamera();
+            loadingText.innerText = "Đang khởi động Camera & Tải ảnh...";
+
+            // Chạy song song cả 2 việc: Bật camera và tải ảnh vào bộ nhớ
+            await Promise.all([initCamera(), preloadAllImages()]);
+            
+            // Chỉ khi tải xong hết mới bắt đầu
+            loadingText.style.display = 'none'; 
+            cameraBox.style.display = 'block';
+            appState = 'WAITING'; 
+            guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
         });
 
         async function initCamera() {
@@ -418,8 +453,6 @@
                 onFrame: async () => { await hands.send({image: videoElement}); }, width: 640, height: 480
             });
             await camera.start();
-            loadingText.style.display = 'none'; cameraBox.style.display = 'block';
-            appState = 'WAITING'; guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
         }
 
         function countFingers(landmarks) {
@@ -483,19 +516,16 @@
             if(appState === 'FINALE') return;
             appState = 'FINALE';
             
-            // CẬP NHẬT: Fade out nhạc intro thay vì pause ngay lập tức
             fadeOutAudio(AUDIO.bgIntro);
             
-            // CẬP NHẬT: Thêm class fade-out-transition để chữ mờ dần
             greetingBox.classList.add('fade-out-transition');
             countDisplay.classList.add('fade-out-transition');
             guideText.classList.add('fade-out-transition');
 
-            // Đợi 1.5s cho hiệu ứng mờ hoàn tất rồi mới ẩn hẳn
             setTimeout(() => {
                 greetingBox.style.display = 'none';
                 countDisplay.style.display = 'none';
-                greetingBox.classList.remove('fade-out-transition'); // Reset class
+                greetingBox.classList.remove('fade-out-transition');
                 countDisplay.classList.remove('fade-out-transition');
                 guideText.classList.remove('fade-out-transition');
                 guideText.innerText = "Hãy giữ tay để tận hưởng...";
@@ -505,7 +535,7 @@
 
             setTimeout(() => {
                 if(appState !== 'FINALE') return; 
-                // CẬP NHẬT: Đích đến (targetY) cao hơn (0.35 thay vì 0.5)
+                // Target cao hơn (0.35) và speed trong class đã được tăng
                 fireworks.push(new Firework(canvas.width / 2, canvas.height, canvas.height * 0.35, 'big-opener'));
                 setTimeout(() => {
                     if(appState !== 'FINALE') return;
@@ -518,7 +548,7 @@
                     if(floatInterval) clearInterval(floatInterval);
                     floatInterval = setInterval(spawnFloatingItem, 2500);
                     finaleOngoing = true; 
-                }, 4000); // Tăng thời gian chờ lên chút cho phù hợp tốc độ bay mới
+                }, 4000); 
             }, 2000); 
         }
 
@@ -550,7 +580,6 @@
                 
                 bgLayer.style.opacity = 1;
                 
-                // Đảm bảo UI hiển thị lại đúng cách khi reset
                 greetingBox.classList.remove('fade-out-transition');
                 countDisplay.classList.remove('fade-out-transition');
                 guideText.classList.remove('fade-out-transition');
@@ -561,7 +590,7 @@
                 guideText.style.bottom = '15%';
 
                 AUDIO.bgIntro.currentTime = 0;
-                AUDIO.bgIntro.volume = 0.4; // Reset volume intro
+                AUDIO.bgIntro.volume = 0.4; 
                 AUDIO.bgIntro.play().catch(e => console.log("User interaction needed"));
 
                 isResetting = false; 

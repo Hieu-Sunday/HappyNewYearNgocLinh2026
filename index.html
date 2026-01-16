@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year 2026 - Special for Ngoc Linh</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@700&family=Orbitron:wght@900&family=Great+Vibes&family=Nunito:wght@400;700&display=swap');
+
+        body {
+            margin: 0; padding: 0; background-color: #000; overflow: hidden;
+            font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
+        }
+        #bg-image-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
+            transition: opacity 2s ease-in-out; background: #000;
+        }
+        #bg-image-layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        #canvas-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background-color: #000;
+        }
+        #landing-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); transition: opacity 0.5s;
+        }
+        #start-btn {
+            padding: 20px 50px; font-size: 2rem; font-family: 'Nunito', sans-serif; font-weight: 700;
+            color: #fff; background: linear-gradient(45deg, #ff0055, #ff00aa);
+            border: 2px solid #fff; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 0 30px #ff00aa; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #start-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px #ff00aa; }
+        
+        #ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 60;
+            pointer-events: none; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            transition: opacity 0.5s;
+        }
+        
+        /* Class mới để fade out mượt mà */
+        .fade-out-transition {
+            opacity: 0 !important;
+            transition: opacity 1.5s ease-out;
+        }
+
+        #greeting-box { display: none; margin-bottom: 20px; animation: fadeIn 1s ease-out; transition: opacity 1s; }
+        .greet-line1 {
+            font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #fff;
+            text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff00aa; margin-bottom: 10px;
+        }
+        .greet-line2 {
+            font-family: 'Cinzel', serif; font-size: 4rem; font-weight: bold; color: #ffd700;
+            text-transform: uppercase; text-shadow: 0 0 15px #ffd700, 0 0 30px #ff4500; letter-spacing: 3px;
+        }
+        #countdown-number {
+            font-family: 'Orbitron', sans-serif; font-size: 15rem; line-height: 1;
+            background: linear-gradient(to bottom, #ffffff 0%, #ffd700 50%, #ff8c00 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.8));
+            display: none; margin-top: 20px;
+            transition: opacity 1s;
+        }
+        .pop-anim { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        #guide-text {
+            position: absolute; bottom: 15%; font-family: 'Nunito', sans-serif; font-weight: 700;
+            font-size: 1.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 0 10px #000;
+            width: 100%; text-align: center; transition: opacity 1s;
+        }
+
+        #floating-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 40;
+            overflow: hidden; pointer-events: none; display: none; 
+            transition: opacity 1s ease;
+        }
+
+        .float-item { 
+            position: absolute; 
+            top: 100%; 
+            will-change: transform; 
+            animation: floatUp 15s linear forwards; 
+        }
+
+        @keyframes floatUp { 
+            0% { transform: translateY(0); opacity: 0; } 
+            5% { opacity: 1; } 
+            90% { opacity: 1; } 
+            100% { transform: translateY(-150vh); opacity: 0; } 
+        }
+
+        .msg-box {
+            z-index: 50; background: rgba(20, 0, 10, 0.85); border: 2px solid #ff69b4;
+            border-radius: 20px; padding: 20px 30px; width: 300px; text-align: center;
+            color: #fff; font-family: 'Dancing Script', cursive; font-size: 1.8rem;
+            box-shadow: 0 0 25px rgba(255, 20, 147, 0.8); white-space: pre-wrap;
+        }
+        .img-box {
+            z-index: 45; padding: 8px; background: #ff1493; border-radius: 15px;
+            box-shadow: 0 0 25px rgba(255, 20, 147, 0.5); width: 250px; min-height: 150px; 
+            display: flex; justify-content: center; align-items: center;
+        }
+        .img-box img { width: 100%; display: block; border-radius: 10px; }
+        
+        #camera-box {
+            position: absolute; bottom: 20px; right: 20px; width: 160px; height: 120px;
+            z-index: 90; border: 2px solid #ff00aa; border-radius: 10px; overflow: hidden;
+            background: #000; transform: scaleX(-1); display: none; opacity: 0.7;
+        }
+        .input_video { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
+        #camera-overlay { position: absolute; top:0; left:0; width:100%; height:100%; }
+        #loading {
+            position: absolute; top: 60%; left: 50%; transform: translateX(-50%);
+            font-family: 'Nunito', sans-serif; color: #fff; font-size: 1.2rem; display: none; z-index: 101;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="landing-screen">
+        <button id="start-btn">Nhấn để bắt đầu đếm ngược</button>
+    </div>
+    <div id="loading">Đang tải hệ thống...</div>
+
+    <div id="bg-image-layer">
+        <img src="res//image/back.png" alt="Background" onerror="this.style.display='none'">
+    </div>
+    <canvas id="canvas-bg"></canvas>
+
+    <div id="camera-box">
+        <video class="input_video" playsinline></video>
+        <canvas id="camera-overlay"></canvas>
+    </div>
+
+    <div id="ui-layer">
+        <div id="greeting-box">
+            <div class="greet-line1">Chúc mừng năm mới nhé</div>
+            <div class="greet-line2">Ngọc Linh !</div>
+        </div>
+
+        <div id="countdown-number">5</div>
+        
+        <div id="guide-text"></div>
+    </div>
+
+    <div id="floating-container"></div>
+
+    <script>
+        // --- ÂM THANH SYSTEM ---
+        const AUDIO = {
+            bgIntro: new Audio('res/sound/bg_intro.mp3'),
+            bgFinale: new Audio('res/sound/bg_finale.mp3'),
+            count5: new Audio('res/sound/count_5.mp3'),
+            count4: new Audio('res/sound/count_4.mp3'),
+            count3: new Audio('res/sound/count_3.mp3'),
+            count2: new Audio('res/sound/count_2.mp3'),
+            count1: new Audio('res/sound/count_1.mp3'),
+            whistle: new Audio('res/sound/whistle.mp3'),
+            boom: new Audio('res/sound/boom.mp3')
+        };
+
+        AUDIO.bgIntro.loop = true; AUDIO.bgIntro.volume = 0.4;
+        AUDIO.bgFinale.loop = true; AUDIO.bgFinale.volume = 0.8;
+        
+        AUDIO.count5.volume = 1.0; AUDIO.count4.volume = 1.0;
+        AUDIO.count3.volume = 1.0; AUDIO.count2.volume = 1.0;
+        AUDIO.count1.volume = 1.0; AUDIO.whistle.volume = 1.0; AUDIO.boom.volume = 1.0;
+
+        function playCountSound(num) {
+            [AUDIO.count5, AUDIO.count4, AUDIO.count3, AUDIO.count2, AUDIO.count1].forEach(a => {
+                a.pause(); a.currentTime = 0;
+            });
+            if(num === 5) AUDIO.count5.play();
+            if(num === 4) AUDIO.count4.play();
+            if(num === 3) AUDIO.count3.play();
+            if(num === 2) AUDIO.count2.play();
+            if(num === 1) AUDIO.count1.play();
+        }
+
+        // Hàm helper để fade out âm thanh
+        function fadeOutAudio(audio, duration = 1500) {
+            if (audio.paused) return;
+            const originalVolume = audio.volume;
+            const stepTime = 50;
+            const step = originalVolume / (duration / stepTime);
+            
+            const fadeInterval = setInterval(() => {
+                if (audio.volume > step) {
+                    audio.volume -= step;
+                } else {
+                    audio.volume = 0;
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.volume = originalVolume; // Reset volume cho lần sau
+                    clearInterval(fadeInterval);
+                }
+            }, stepTime);
+        }
+
+        // --- DỮ LIỆU ---
+        const MESSAGES = [
+            "🌸 Happy New Year 2026 Ngọc Linh! 🌸", "Chúc bạn yêu một năm rực rỡ sắc màu! ✨",
+            "Mãi xinh đẹp, rạng ngời như thế nhé! 💃", "Cảm ơn vì đã ở bên tôi! ❤️",
+            "Năm mới thắng lợi mới nhé bạn tôi ơi! 🏆", "Luôn mỉm cười thật tươi nhé! 😊",
+            "Yêu Linh nhiều thật nhiều! 💖", "Chúc Linh vạn sự như ý - Tỷ sự như mơ 🌟",
+            "Sức khỏe dồi dào, bình an hạnh phúc 🍀", "Năm 2026 thật bùng nổ và thành công! 🎆",
+            "Mãi là cô gái tuyệt vời nhất quả đất! 👑", "Tiền vào như nước, đếm mỏi tay luôn 💰",
+            "Tình duyên phơi phới, hạnh phúc ngập tràn 💕", "Luôn tỏa sáng như một vì sao nhé ⭐️",
+            "Chúc mừng năm mới người thương! 🥂", "Mong mọi điều tốt đẹp nhất đến với Linh 🌸",
+            "Cùng nhau đón thêm nhiều cái Tết nữa nhé! 🤝", "Năm mới bớt lo âu, thêm niềm vui 😄",
+            "Chúc Linh đi đâu cũng gặp may mắn 🍀", "Sự nghiệp thăng tiến vù vù như diều gặp gió 🚀",
+            "Happy New Year my love! 💋", "Chúc Linh ăn nhiều món ngon mà không béo 🍕",
+            "Luôn giữ vững đam mê cháy bỏng nhé! 🔥", "Năm mới rạng rỡ như ánh mặt trời ☀️",
+            "Chúc Linh đạt được mọi ước mơ 🌈", "Luôn bình yên và ấm áp bên gia đình 🏠",
+            "Một năm 2026 thật đáng nhớ nhé! 📸", "Gửi ngàn nụ hôn nồng thắm đến Linh 😘",
+            "Chúc Linh mỗi ngày đều là một ngày vui 😁", "Mãi bên nhau bạn nhé! 💞",
+            "Chúc Linh xinh đẹp bất chấp thời gian 🌹", "Chúc mừng năm mới 2026 rực rỡ!!! 🎉"
+        ];
+
+        const IMAGES = [
+            "res/image/IMG_5966.JPG", "res/image/IMG_5977.JPG", "res/image/IMG_5940.JPG", "res/image/IMG_5970.JPG",
+            "res/image/IMG_5942.JPG", "res/image/IMG_5968.JPG", "res/image/IMG_5971.JPG", "res/image/IMG_5943.JPG",
+            "res/image/IMG_5969.JPG", "res/image/IMG_5939.JPG", "res/image/IMG_5938.JPG", "res/image/IMG_5974.JPG",
+            "res/image/IMG_5976.JPG", "res/image/IMG_5973.JPG", "res/image/IMG_5941.JPG", "res/image/IMG_5960.JPG",
+            "res/image/IMG_5975.JPG", "res/image/IMG_5946.JPG", "res/image/IMG_5948.JPG", "res/image/IMG_5949.JPG",
+            "res/image/IMG_5947.JPG", "res/image/IMG_5957.JPG", "res/image/IMG_5956.JPG", "res/image/IMG_5944.JPG",
+            "res/image/IMG_5945.JPG", "res/image/IMG_5861.JPG", "res/image/IMG_5862.JPG", "res/image/IMG_5852.JPG",
+            "res/image/IMG_5851.JPG", "res/image/IMG_5951.JPG", "res/image/IMG_5954.JPG", "res/image/IMG_5952.JPG"
+        ];
+
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        const overlayCanvas = document.getElementById('camera-overlay');
+        const overlayCtx = overlayCanvas.getContext('2d');
+        const videoElement = document.getElementsByClassName('input_video')[0];
+        const landingScreen = document.getElementById('landing-screen');
+        const startBtn = document.getElementById('start-btn');
+        const loadingText = document.getElementById('loading');
+        const bgLayer = document.getElementById('bg-image-layer');
+        const cameraBox = document.getElementById('camera-box');
+        const uiLayer = document.getElementById('ui-layer');
+        const countDisplay = document.getElementById('countdown-number');
+        const greetingBox = document.getElementById('greeting-box');
+        const guideText = document.getElementById('guide-text');
+        const floatContainer = document.getElementById('floating-container');
+
+        let appState = 'LANDING';
+        let targetNumber = 5; 
+        let fireworks = [];
+        let stars = [];
+        let floatInterval;
+        let floatIndex = 0;
+        let finaleOngoing = false;
+        let isResetting = false;
+        
+        let screenFlash = 0; 
+        let flashColor = '255, 105, 180';
+
+        function resize() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            overlayCanvas.width = 160; overlayCanvas.height = 120;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Star {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2; this.alpha = Math.random(); this.blink = Math.random() * 0.02;
+            }
+            draw() { ctx.fillStyle = `rgba(255,255,255,${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); }
+            update() { this.alpha += this.blink; if(this.alpha <= 0 || this.alpha >= 1) this.blink *= -1; }
+        }
+        for(let i=0; i<150; i++) stars.push(new Star());
+
+        class Firework {
+            constructor(startX, startY, targetY, type = 'normal') {
+                this.x = startX; this.y = startY; this.targetY = targetY; this.type = type;
+                
+                // CẬP NHẬT: Tốc độ bay chậm hơn cho big-opener để tạo cảm giác hồi hộp
+                if (type === 'big-opener') {
+                    this.speed = 4.5; // Giảm từ 8 xuống 4.5
+                } else {
+                    this.speed = Math.random() * 4 + 10;
+                }
+                
+                this.particles = []; this.exploded = false;
+                if(type === 'big-opener') {
+                    this.hue = 340; 
+                    AUDIO.whistle.currentTime = 0; AUDIO.whistle.play().catch(e => console.log(e));
+                } else if (type === 'finale-round') {
+                    this.hue = Math.random() * 360; 
+                } else { this.hue = Math.random() * 360; }
+            }
+            update() {
+                if(!this.exploded) {
+                    this.y -= this.speed; 
+                    
+                    // CẬP NHẬT: Lực cản ít hơn cho big-opener để nó bay cao hơn và mượt hơn dù tốc độ chậm
+                    if (this.type === 'big-opener') {
+                        this.speed *= 0.995; 
+                    } else {
+                        this.speed *= 0.95;
+                    }
+
+                    if(this.type === 'big-opener') { ctx.fillStyle = 'rgba(255,100,150,0.8)'; ctx.beginPath(); ctx.arc(this.x, this.y + 10, 3, 0, Math.PI*2); ctx.fill(); }
+                    if(this.y <= this.targetY || this.speed <= 1) this.explode();
+                } else {
+                    this.particles.forEach((p,i) => { p.update(); if(p.alpha <= 0) this.particles.splice(i,1); });
+                }
+            }
+            explode() {
+                this.exploded = true;
+                
+                if(this.type === 'finale-round' || this.type === 'big-opener') {
+                    screenFlash = 5;
+                    const flashColors = [ '255, 20, 147', '255, 0, 0', '148, 0, 211', '255, 105, 180' ];
+                    flashColor = flashColors[Math.floor(Math.random() * flashColors.length)];
+                }
+
+                if (this.type === 'big-opener') {
+                    AUDIO.boom.currentTime = 0; AUDIO.boom.play().catch(e => console.log(e));
+                    const particleCount = 600;
+                    for(let i=0; i < particleCount; i++) {
+                        const t = (Math.PI * 2 * i) / particleCount;
+                        const dx = 16 * Math.pow(Math.sin(t), 3);
+                        const dy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                        const hue = 320 + Math.random() * 40; 
+                        const p = new Particle(this.x, this.y, hue, 0); 
+                        const scale = 0.9 + Math.random() * 0.2; 
+                        p.vx = dx * scale; p.vy = (dy - 5) * scale;
+                        p.gravity = 0.05; p.friction = 0.96; p.decay = 0.005; p.sparkle = true;  
+                        this.particles.push(p);
+                    }
+                } else {
+                    let count = (this.type === 'finale-round') ? 300 : 40; 
+                    let spread = (this.type === 'finale-round') ? 15 : 5;
+                    for(let i=0; i<count; i++) this.particles.push(new Particle(this.x, this.y, this.hue, spread));
+                }
+            }
+            draw() {
+                if(!this.exploded) { ctx.fillStyle = (this.type === 'big-opener') ? '#fff' : `hsl(${this.hue}, 100%, 60%)`; ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI*2); ctx.fill(); }
+                else { this.particles.forEach(p => p.draw()); }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, hue, spreadSpeed) {
+                this.x = x; this.y = y;
+                const angle = Math.random() * Math.PI * 2; const speed = Math.random() * spreadSpeed + 1; 
+                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+                this.alpha = 1; this.friction = 0.96; this.gravity = 0.04;
+                this.decay = Math.random() * 0.008 + 0.004; this.hue = hue; this.sparkle = Math.random() < 0.5; 
+            }
+            update() {
+                this.vx *= this.friction; this.vy *= this.friction;
+                this.x += this.vx; this.y += this.vy; this.vy += this.gravity; this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.save(); ctx.globalCompositeOperation = 'lighter';
+                let currentAlpha = this.alpha; if(this.sparkle) currentAlpha *= (0.5 + Math.random() * 0.5); 
+                ctx.fillStyle = `hsla(${this.hue}, 100%, 60%, ${currentAlpha})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill(); ctx.restore();
+            }
+        }
+
+        function animateCanvas() {
+            if (screenFlash > 0) {
+                ctx.fillStyle = `rgba(${flashColor}, ${screenFlash * 0.015})`; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                screenFlash--;
+            } else {
+                ctx.fillStyle = 'rgba(0,0,0,0.2)'; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            if(appState !== 'LANDING') stars.forEach(s => { s.update(); s.draw(); });
+            if(appState === 'COUNTDOWN' && Math.random() < 0.05) {
+                fireworks.push(new Firework(Math.random() * canvas.width, canvas.height, Math.random() * (canvas.height * 0.5), 'normal'));
+            }
+            
+            if(finaleOngoing && Math.random() < 0.08) { 
+                fireworks.push(new Firework(
+                    Math.random() * canvas.width, 
+                    canvas.height, 
+                    canvas.height * 0.05 + Math.random() * (canvas.height * 0.5), 
+                    'finale-round'
+                ));
+            }
+
+            fireworks.forEach((fw, i) => {
+                fw.update(); fw.draw(); if(fw.exploded && fw.particles.length === 0) fireworks.splice(i,1);
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        startBtn.addEventListener('click', () => {
+            AUDIO.bgIntro.play().catch(e => console.log("Cần tương tác người dùng để phát nhạc"));
+            landingScreen.style.opacity = 0; setTimeout(() => landingScreen.style.display = 'none', 500);
+            loadingText.style.display = 'block';
+            initCamera();
+        });
+
+        async function initCamera() {
+            const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+            hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+            hands.onResults(onResults);
+            const camera = new Camera(videoElement, {
+                onFrame: async () => { await hands.send({image: videoElement}); }, width: 640, height: 480
+            });
+            await camera.start();
+            loadingText.style.display = 'none'; cameraBox.style.display = 'block';
+            appState = 'WAITING'; guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
+        }
+
+        function countFingers(landmarks) {
+            let count = 0;
+            if (landmarks[8].y < landmarks[6].y) count++;
+            if (landmarks[12].y < landmarks[10].y) count++;
+            if (landmarks[16].y < landmarks[14].y) count++;
+            if (landmarks[20].y < landmarks[18].y) count++;
+            const isRight = landmarks[17].x > landmarks[5].x;
+            if ((isRight && landmarks[4].x < landmarks[3].x) || (!isRight && landmarks[4].x > landmarks[3].x)) count++;
+            return count;
+        }
+
+        function onResults(results) {
+            overlayCtx.clearRect(0,0,overlayCanvas.width, overlayCanvas.height);
+            if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const lm = results.multiHandLandmarks[0];
+                drawConnectors(overlayCtx, lm, HAND_CONNECTIONS, {color: '#00ff00', lineWidth: 2});
+                drawLandmarks(overlayCtx, lm, {color: '#ff0000', lineWidth: 1});
+                const fingers = countFingers(lm);
+                processGameLogic(fingers);
+            } else {
+                if(appState === 'COUNTDOWN' || appState === 'FINALE') {
+                    if (!isResetting) resetGame();
+                }
+            }
+        }
+
+        function processGameLogic(fingers) {
+            if (isResetting) return; 
+            if (appState === 'WAITING') {
+                if(fingers === 5) startCountdown();
+            } 
+            else if (appState === 'COUNTDOWN') {
+                if(fingers === targetNumber - 1) {
+                    targetNumber = fingers;
+                    if(targetNumber > 0) {
+                        updateCountdownDisplay(targetNumber);
+                    } else {
+                        startFinaleSequence();
+                    }
+                }
+            }
+        }
+
+        function startCountdown() {
+            appState = 'COUNTDOWN'; targetNumber = 5;
+            bgLayer.style.opacity = 0;
+            guideText.style.bottom = '10%'; guideText.innerText = "Giữ tay và đếm ngược dần xuống...";
+            greetingBox.style.display = 'block'; countDisplay.style.display = 'block';
+            updateCountdownDisplay(5);
+        }
+
+        function updateCountdownDisplay(num) {
+            countDisplay.innerText = num;
+            countDisplay.classList.remove('pop-anim'); void countDisplay.offsetWidth; countDisplay.classList.add('pop-anim');
+            playCountSound(num);
+        }
+
+        function startFinaleSequence() {
+            if(appState === 'FINALE') return;
+            appState = 'FINALE';
+            
+            // CẬP NHẬT: Fade out nhạc intro thay vì pause ngay lập tức
+            fadeOutAudio(AUDIO.bgIntro);
+            
+            // CẬP NHẬT: Thêm class fade-out-transition để chữ mờ dần
+            greetingBox.classList.add('fade-out-transition');
+            countDisplay.classList.add('fade-out-transition');
+            guideText.classList.add('fade-out-transition');
+
+            // Đợi 1.5s cho hiệu ứng mờ hoàn tất rồi mới ẩn hẳn
+            setTimeout(() => {
+                greetingBox.style.display = 'none';
+                countDisplay.style.display = 'none';
+                greetingBox.classList.remove('fade-out-transition'); // Reset class
+                countDisplay.classList.remove('fade-out-transition');
+                guideText.classList.remove('fade-out-transition');
+                guideText.innerText = "Hãy giữ tay để tận hưởng...";
+            }, 1500);
+
+            fireworks = []; 
+
+            setTimeout(() => {
+                if(appState !== 'FINALE') return; 
+                // CẬP NHẬT: Đích đến (targetY) cao hơn (0.35 thay vì 0.5)
+                fireworks.push(new Firework(canvas.width / 2, canvas.height, canvas.height * 0.35, 'big-opener'));
+                setTimeout(() => {
+                    if(appState !== 'FINALE') return;
+                    AUDIO.bgFinale.play().catch(e => console.log(e));
+                    
+                    floatContainer.style.display = 'block';
+                    floatContainer.style.opacity = '1';
+                    
+                    spawnFloatingItem(); 
+                    if(floatInterval) clearInterval(floatInterval);
+                    floatInterval = setInterval(spawnFloatingItem, 2500);
+                    finaleOngoing = true; 
+                }, 4000); // Tăng thời gian chờ lên chút cho phù hợp tốc độ bay mới
+            }, 2000); 
+        }
+
+        function resetGame() {
+            if (isResetting) return;
+            isResetting = true; 
+            
+            floatContainer.style.opacity = '0';
+            
+            const fadeAudio = setInterval(() => {
+                if(AUDIO.bgFinale.volume > 0.1) AUDIO.bgFinale.volume -= 0.1;
+                else {
+                    clearInterval(fadeAudio);
+                    AUDIO.bgFinale.pause();
+                    AUDIO.bgFinale.currentTime = 0;
+                    AUDIO.bgFinale.volume = 0.8;
+                }
+            }, 50);
+
+            setTimeout(() => {
+                appState = 'WAITING';
+                targetNumber = 5;
+                finaleOngoing = false;
+                
+                if(floatInterval) clearInterval(floatInterval);
+                floatContainer.innerHTML = '';
+                floatContainer.style.display = 'none';
+                fireworks = [];
+                
+                bgLayer.style.opacity = 1;
+                
+                // Đảm bảo UI hiển thị lại đúng cách khi reset
+                greetingBox.classList.remove('fade-out-transition');
+                countDisplay.classList.remove('fade-out-transition');
+                guideText.classList.remove('fade-out-transition');
+                
+                greetingBox.style.display = 'none'; 
+                countDisplay.style.display = 'none';
+                guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
+                guideText.style.bottom = '15%';
+
+                AUDIO.bgIntro.currentTime = 0;
+                AUDIO.bgIntro.volume = 0.4; // Reset volume intro
+                AUDIO.bgIntro.play().catch(e => console.log("User interaction needed"));
+
+                isResetting = false; 
+            }, 800);
+        }
+
+        function spawnFloatingItem() {
+            if(appState !== 'FINALE') return;
+
+            const layoutType = Math.random() > 0.5 ? 0 : 1; 
+            const msgEl = document.createElement('div'); msgEl.classList.add('float-item', 'msg-box');
+            msgEl.innerText = MESSAGES[floatIndex % MESSAGES.length];
+            const imgEl = document.createElement('div'); imgEl.classList.add('float-item', 'img-box');
+            const img = document.createElement('img');
+            const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
+            img.src = IMAGES[randomImgIndex]; imgEl.appendChild(img);
+            
+            const randomLeft = 5 + Math.random() * 35; 
+            const randomRight = 55 + Math.random() * 35;
+            
+            if (layoutType === 0) { msgEl.style.left = randomLeft + '%'; imgEl.style.left = randomRight + '%'; } 
+            else { msgEl.style.left = randomRight + '%'; imgEl.style.left = randomLeft + '%'; }
+            
+            floatContainer.appendChild(msgEl); floatContainer.appendChild(imgEl);
+            floatIndex++;
+            
+            setTimeout(() => { if(msgEl.parentNode) msgEl.remove(); }, 15000);
+            setTimeout(() => { if(imgEl.parentNode) imgEl.remove(); }, 15000);
+        }
+    </script>
+</body>
+</html>

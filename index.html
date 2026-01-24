@@ -10,20 +10,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 
     <style>
+        /* Import Font chữ đẹp */
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@700&family=Orbitron:wght@900&family=Great+Vibes&family=Nunito:wght@400;700&display=swap');
 
         body {
             margin: 0; padding: 0; background-color: #000; overflow: hidden;
             font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
         }
+
+        /* --- BACKGROUND LAYERS --- */
         #bg-image-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
             transition: opacity 2s ease-in-out; background: #000;
         }
         #bg-image-layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
         #canvas-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background-color: #000;
         }
+
+        /* --- LANDING SCREEN & UI --- */
         #landing-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
             display: flex; justify-content: center; align-items: center;
@@ -37,6 +43,12 @@
         }
         #start-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px #ff00aa; }
         
+        #loading {
+            position: absolute; top: 60%; left: 50%; transform: translateX(-50%);
+            font-family: 'Nunito', sans-serif; color: #fff; font-size: 1.2rem; display: none; z-index: 101;
+            text-align: center; width: 100%;
+        }
+
         #ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 60;
             pointer-events: none; display: flex; flex-direction: column;
@@ -44,10 +56,7 @@
             transition: opacity 0.5s;
         }
         
-        .fade-out-transition {
-            opacity: 0 !important;
-            transition: opacity 1.5s ease-out;
-        }
+        .fade-out-transition { opacity: 0 !important; transition: opacity 1.5s ease-out; }
 
         #greeting-box { display: none; margin-bottom: 20px; animation: fadeIn 1s ease-out; transition: opacity 1s; }
         .greet-line1 {
@@ -58,6 +67,7 @@
             font-family: 'Cinzel', serif; font-size: 4rem; font-weight: bold; color: #ffd700;
             text-transform: uppercase; text-shadow: 0 0 15px #ffd700, 0 0 30px #ff4500; letter-spacing: 3px;
         }
+        
         #countdown-number {
             font-family: 'Orbitron', sans-serif; font-size: 15rem; line-height: 1;
             background: linear-gradient(to bottom, #ffffff 0%, #ffd700 50%, #ff8c00 100%);
@@ -69,32 +79,37 @@
         .pop-anim { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
         #guide-text {
             position: absolute; bottom: 15%; font-family: 'Nunito', sans-serif; font-weight: 700;
             font-size: 1.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 0 10px #000;
             width: 100%; text-align: center; transition: opacity 1s;
         }
 
+        /* Timer cho phần Finale */
+        #finale-timer {
+            position: absolute; bottom: 30px; left: 0; width: 100%;
+            text-align: center; z-index: 150; pointer-events: none;
+            font-family: 'Dancing Script', cursive; font-size: 2rem; color: #fff;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff00aa;
+            display: none; opacity: 0; transition: opacity 1s;
+        }
+
+        /* --- FLOATING ITEMS --- */
         #floating-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 40;
             overflow: hidden; pointer-events: none; display: none; 
-            transition: opacity 1s ease;
+            transition: opacity 2s ease;
         }
-
         .float-item { 
-            position: absolute; 
-            top: 100%; 
-            will-change: transform; 
+            position: absolute; top: 100%; will-change: transform; 
             animation: floatUp 15s linear forwards; 
         }
-
         @keyframes floatUp { 
             0% { transform: translateY(0); opacity: 0; } 
-            5% { opacity: 1; } 
-            90% { opacity: 1; } 
+            5% { opacity: 1; } 90% { opacity: 1; } 
             100% { transform: translateY(-150vh); opacity: 0; } 
         }
-
         .msg-box {
             z-index: 50; background: rgba(20, 0, 10, 0.85); border: 2px solid #ff69b4;
             border-radius: 20px; padding: 20px 30px; width: 300px; text-align: center;
@@ -108,6 +123,7 @@
         }
         .img-box img { width: 100%; display: block; border-radius: 10px; }
         
+        /* --- CAMERA & OVERLAY --- */
         #camera-box {
             position: absolute; bottom: 20px; right: 20px; width: 160px; height: 120px;
             z-index: 90; border: 2px solid #ff00aa; border-radius: 10px; overflow: hidden;
@@ -115,11 +131,119 @@
         }
         .input_video { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
         #camera-overlay { position: absolute; top:0; left:0; width:100%; height:100%; }
-        #loading {
-            position: absolute; top: 60%; left: 50%; transform: translateX(-50%);
-            font-family: 'Nunito', sans-serif; color: #fff; font-size: 1.2rem; display: none; z-index: 101;
-            text-align: center; width: 100%;
+
+        /* --- 3D LETTER STYLES (Đã sửa lỗi viền và căn giữa) --- */
+        #letter-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
+            display: none; justify-content: center; align-items: center;
+            perspective: 1500px; pointer-events: none; 
         }
+
+        .book-wrapper {
+            position: relative; width: 750px; height: 500px; 
+            transform-style: preserve-3d; transition: transform 1s ease-in-out;
+            /* Xoá box-shadow ở wrapper để tránh lỗi ghost border */
+            animation: cardFloatUp 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            pointer-events: auto; flex-shrink: 0;
+        }
+        @keyframes cardFloatUp { from { transform: translateY(100vh); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        /* Hiệu ứng nhịp đập ánh sáng áp dụng cho từng trang */
+        @keyframes glowPulse {
+            from { box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); }
+            to { box-shadow: 0 0 40px rgba(255, 20, 147, 1), 0 0 60px rgba(255, 105, 180, 0.8); }
+        }
+        
+        .book-page {
+            position: absolute; top: 0; width: 50%; height: 100%;
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s;
+            transform-origin: left center; backface-visibility: hidden;
+            /* Thêm hiệu ứng glow vào từng trang */
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+            animation: glowPulse 2s infinite alternate;
+        }
+
+        /* Bìa Trước */
+        .cover-front {
+            left: 50%; z-index: 20;
+            background: url('res/image/love1.png') center/cover no-repeat;
+            background-color: #ffb6c1; 
+            border-radius: 0 15px 15px 0;
+            position: relative; /* Để căn giữa tuyệt đối con */
+            transform: rotateY(0deg); 
+            /* Đồng bộ border với trang bên trong */
+            border: 8px double #ff69b4; border-left: none; box-sizing: border-box;
+        }
+
+        /* Chữ trên bìa được căn giữa tuyệt đối */
+        .cover-front::after {
+            content: "For My Love"; 
+            font-family: 'Great Vibes', cursive; font-size: 4rem; color: #fff; 
+            text-shadow: 0 0 10px #ff0000;
+            background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 50px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            /* Căn giữa tuyệt đối */
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: max-content; max-width: 80%; text-align: center;
+        }
+
+        /* Trang Phải (Nội dung) */
+        .page-right {
+            left: 50%; z-index: 10; background: #fff;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; box-sizing: border-box; text-align: center;
+            font-family: 'Nunito', sans-serif; color: #d63384;
+            border: 8px double #ff69b4; border-left: none; border-radius: 0 15px 15px 0;
+        }
+
+        /* Trang Trái (Ảnh) */
+        .page-left {
+            left: 0; z-index: 10; background: #fff5ee;
+            border-radius: 15px 0 0 15px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 15px; box-sizing: border-box;
+            border: 8px double #ff69b4; border-right: none;
+            opacity: 0; transform: rotateY(0deg); 
+        }
+        .page-left img {
+            width: 85%; height: 42%; object-fit: cover; margin: 10px 0;
+            border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: rotate(-3deg);
+        }
+        .page-left img:last-child { transform: rotate(3deg); }
+
+        /* Trạng thái Mở */
+        .book-wrapper.open .cover-front { transform: rotateY(-180deg); opacity: 0; pointer-events: none; }
+        .book-wrapper.open .page-left { opacity: 1; transition-delay: 0.2s; }
+        
+        .text-content {
+            font-size: 1.4rem; line-height: 1.6; font-weight: 600;
+            margin-bottom: 25px; min-height: 180px; width: 90%;
+            display: flex; align-items: center; justify-content: center;
+            text-shadow: 0 0 1px rgba(214, 51, 132, 0.1);
+        }
+        
+        .ctrl-btn {
+            margin-top: 15px; padding: 10px 25px; border: none; background: #ff1493; color: white;
+            font-family: 'Nunito', sans-serif; font-weight: bold; border-radius: 25px; cursor: pointer;
+            box-shadow: 0 3px 10px rgba(255,20,147,0.4); transition: 0.2s; font-size: 1.1rem;
+            position: relative; z-index: 100;
+        }
+        .ctrl-btn:hover { background: #ff007f; transform: scale(1.05); }
+        .reset-btn { background: #444; margin-top: 15px; font-size: 1rem; }
+        .reset-btn:hover { background: #666; }
+
+        #letter-controls {
+            position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; gap: 10px; opacity: 0; transition: opacity 0.5s; 
+            pointer-events: auto; z-index: 210;
+        }
+        #btn-open-letter {
+             padding: 18px 50px; font-size: 1.8rem; background: #ff0055; color: white; border: none; border-radius: 50px;
+             box-shadow: 0 0 25px #ff0055; cursor: pointer; animation: pulse 2s infinite; 
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
     </style>
 </head>
 <body>
@@ -130,7 +254,7 @@
     <div id="loading">Đang tải hệ thống...</div>
 
     <div id="bg-image-layer">
-        <img src="res//image/back.png" alt="Background" onerror="this.style.display='none'">
+        <img src="res/image/back.png" alt="Background" onerror="this.style.display='none'">
     </div>
     <canvas id="canvas-bg"></canvas>
 
@@ -148,15 +272,41 @@
         <div id="countdown-number">5</div>
         
         <div id="guide-text"></div>
+        
+        <div id="finale-timer"></div>
     </div>
 
     <div id="floating-container"></div>
 
+    <div id="letter-container">
+        <div class="book-wrapper" id="the-book">
+            <div class="book-page cover-front"></div>
+            <div class="book-page page-left">
+                <img src="res/image/love1.png" alt="Love 1">
+                <img src="res/image/love2.png" alt="Love 2">
+            </div>
+            <div class="book-page page-right">
+                <div class="text-content" id="letter-text">Loading message...</div>
+                <button class="ctrl-btn" id="btn-next-msg">Đọc tiếp ❤️</button>
+                <button class="ctrl-btn" id="btn-close-letter" style="display:none;">Đóng thiệp</button>
+            </div>
+        </div>
+        
+        <div id="letter-controls">
+            <button id="btn-open-letter">Mở Thiệp 💌</button>
+            <button class="ctrl-btn reset-btn" id="btn-reset-game" style="display:none;">Làm lại từ đầu ↻</button>
+        </div>
+    </div>
+
     <script>
+        // --- CẤU HÌNH ---
+        const FINALE_DURATION = 100000; // 3 phút (Thời gian trôi ảnh/nhạc)
+
         // --- ÂM THANH SYSTEM ---
         const AUDIO = {
             bgIntro: new Audio('res/sound/bg_intro.mp3'),
             bgFinale: new Audio('res/sound/bg_finale.mp3'),
+            bgLetter: new Audio('res/sound/bg_letter.mp3'),
             count5: new Audio('res/sound/count_5.mp3'),
             count4: new Audio('res/sound/count_4.mp3'),
             count3: new Audio('res/sound/count_3.mp3'),
@@ -168,6 +318,7 @@
 
         AUDIO.bgIntro.loop = true; AUDIO.bgIntro.volume = 0.4;
         AUDIO.bgFinale.loop = true; AUDIO.bgFinale.volume = 0.8;
+        AUDIO.bgLetter.loop = true; AUDIO.bgLetter.volume = 0.7;
         
         AUDIO.count5.volume = 1.0; AUDIO.count4.volume = 1.0;
         AUDIO.count3.volume = 1.0; AUDIO.count2.volume = 1.0;
@@ -223,7 +374,9 @@
             "Chúc Linh xinh đẹp bất chấp thời gian 🌹", "Chúc mừng năm mới 2026 rực rỡ!!! 🎉"
         ];
 
+        // Mảng ảnh tổng hợp (để preload)
         const IMAGES = [
+            "res/image/love1.png", "res/image/love2.png",
             "res/image/IMG_5966.JPG", "res/image/IMG_5977.JPG", "res/image/IMG_5940.JPG", "res/image/IMG_5970.JPG",
             "res/image/IMG_5942.JPG", "res/image/IMG_5968.JPG", "res/image/IMG_5971.JPG", "res/image/IMG_5943.JPG",
             "res/image/IMG_5969.JPG", "res/image/IMG_5939.JPG", "res/image/IMG_5938.JPG", "res/image/IMG_5974.JPG",
@@ -233,7 +386,18 @@
             "res/image/IMG_5945.JPG", "res/image/IMG_5861.JPG", "res/image/IMG_5862.JPG", "res/image/IMG_5852.JPG",
             "res/image/IMG_5851.JPG", "res/image/IMG_5951.JPG", "res/image/IMG_5954.JPG", "res/image/IMG_5952.JPG"
         ];
+        
+        // Lọc ảnh trôi (Không bao gồm ảnh thiệp love1, love2)
+        const FLOATING_IMAGES = IMAGES.filter(img => !img.includes('love1') && !img.includes('love2'));
 
+        // Nội dung thư
+        const LETTER_MESSAGES = [
+            "Gửi Ngọc Linh,\nNăm mới đã đến rồi, anh muốn gửi đến em những lời chúc tốt đẹp nhất. Cảm ơn em vì đã xuất hiện và làm cuộc sống của anh trở nên rực rỡ hơn bao giờ hết. 🌹",
+            "Năm 2026 này, anh mong em sẽ luôn cười thật tươi, đạt được mọi ước mơ mà em ấp ủ. Dù có chuyện gì xảy ra, hãy nhớ rằng luôn có anh ở phía sau ủng hộ em hết mình. 💪❤️",
+            "Yêu em rất nhiều! Chúc mừng năm mới, cô gái tuyệt vời nhất của anh. Hãy cùng nhau tạo nên thật nhiều kỷ niệm đẹp nữa nhé! 💑✨"
+        ];
+
+        // --- GLOBAL VARIABLES & SELECTORS ---
         const canvas = document.getElementById('canvas-bg');
         const ctx = canvas.getContext('2d');
         const overlayCanvas = document.getElementById('camera-overlay');
@@ -249,19 +413,33 @@
         const greetingBox = document.getElementById('greeting-box');
         const guideText = document.getElementById('guide-text');
         const floatContainer = document.getElementById('floating-container');
+        const finaleTimer = document.getElementById('finale-timer'); // Element Timer mới
 
-        let appState = 'LANDING';
+        // Element thiệp
+        const letterContainer = document.getElementById('letter-container');
+        const theBook = document.getElementById('the-book');
+        const letterControls = document.getElementById('letter-controls');
+        const btnOpenLetter = document.getElementById('btn-open-letter');
+        const btnNextMsg = document.getElementById('btn-next-msg');
+        const btnCloseLetter = document.getElementById('btn-close-letter');
+        const btnResetGame = document.getElementById('btn-reset-game');
+        const letterText = document.getElementById('letter-text');
+
+        let appState = 'LANDING'; 
         let targetNumber = 5; 
         let fireworks = [];
         let stars = [];
         let floatInterval;
+        let finaleTimerInterval; // Interval cho timer
         let floatIndex = 0;
         let finaleOngoing = false;
         let isResetting = false;
         
         let screenFlash = 0; 
         let flashColor = '255, 105, 180';
+        let currentLetterPage = 0;
 
+        // --- INIT & RESIZE ---
         function resize() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             overlayCanvas.width = 160; overlayCanvas.height = 120;
@@ -269,6 +447,7 @@
         window.addEventListener('resize', resize);
         resize();
 
+        // --- CLASS HIỆU ỨNG ---
         class Star {
             constructor() { this.reset(); }
             reset() {
@@ -283,14 +462,7 @@
         class Firework {
             constructor(startX, startY, targetY, type = 'normal') {
                 this.x = startX; this.y = startY; this.targetY = targetY; this.type = type;
-                
-                // --- SỬA ĐỔI: Tăng tốc độ bay cho Big Opener ---
-                if (type === 'big-opener') {
-                    this.speed = 4.5; // Tăng từ 4.5 lên 7 để bay nhanh hơn, giảm cảm giác lag
-                } else {
-                    this.speed = Math.random() * 4 + 10;
-                }
-                
+                if (type === 'big-opener') { this.speed = 4.5; } else { this.speed = Math.random() * 4 + 10; }
                 this.particles = []; this.exploded = false;
                 if(type === 'big-opener') {
                     this.hue = 340; 
@@ -302,13 +474,7 @@
             update() {
                 if(!this.exploded) {
                     this.y -= this.speed; 
-                    
-                    if (this.type === 'big-opener') {
-                        this.speed *= 0.998; // Giảm lực cản để bay cao đều
-                    } else {
-                        this.speed *= 0.95;
-                    }
-
+                    if (this.type === 'big-opener') { this.speed *= 0.998; } else { this.speed *= 0.95; }
                     if(this.type === 'big-opener') { ctx.fillStyle = 'rgba(255,100,150,0.8)'; ctx.beginPath(); ctx.arc(this.x, this.y + 10, 3, 0, Math.PI*2); ctx.fill(); }
                     if(this.y <= this.targetY || this.speed <= 1) this.explode();
                 } else {
@@ -317,13 +483,11 @@
             }
             explode() {
                 this.exploded = true;
-                
                 if(this.type === 'finale-round' || this.type === 'big-opener') {
                     screenFlash = 5;
                     const flashColors = [ '255, 20, 147', '255, 0, 0', '148, 0, 211', '255, 105, 180' ];
                     flashColor = flashColors[Math.floor(Math.random() * flashColors.length)];
                 }
-
                 if (this.type === 'big-opener') {
                     AUDIO.boom.currentTime = 0; AUDIO.boom.play().catch(e => console.log(e));
                     const particleCount = 600;
@@ -401,32 +565,27 @@
         }
         animateCanvas();
 
-        // --- HÀM PRELOAD ẢNH MỚI THÊM VÀO ---
+        // --- PRELOAD LOGIC ---
         let imagesLoaded = 0;
         const totalImages = IMAGES.length;
 
         function preloadAllImages() {
             return new Promise((resolve) => {
                 if (totalImages === 0) resolve();
-                
                 IMAGES.forEach((src) => {
                     const img = new Image();
                     img.src = src;
                     img.onload = () => {
                         imagesLoaded++;
-                        // Cập nhật text loading để người dùng biết tiến độ
                         loadingText.innerText = `Đang tải tài nguyên... ${Math.floor((imagesLoaded / totalImages) * 100)}%`;
                         if (imagesLoaded === totalImages) resolve();
                     };
-                    img.onerror = () => {
-                        imagesLoaded++; // Nếu lỗi cũng tính là xong để không treo
-                        if (imagesLoaded === totalImages) resolve();
-                    };
+                    img.onerror = () => { imagesLoaded++; if (imagesLoaded === totalImages) resolve(); };
                 });
             });
         }
 
-        // --- SỬA LẠI SỰ KIỆN CLICK NÚT START ---
+        // --- GAME START LOGIC ---
         startBtn.addEventListener('click', async () => {
             AUDIO.bgIntro.play().catch(e => console.log("Cần tương tác người dùng để phát nhạc"));
             landingScreen.style.opacity = 0; 
@@ -435,10 +594,8 @@
             loadingText.style.display = 'block';
             loadingText.innerText = "Đang khởi động Camera & Tải ảnh...";
 
-            // Chạy song song cả 2 việc: Bật camera và tải ảnh vào bộ nhớ
             await Promise.all([initCamera(), preloadAllImages()]);
             
-            // Chỉ khi tải xong hết mới bắt đầu
             loadingText.style.display = 'none'; 
             cameraBox.style.display = 'block';
             appState = 'WAITING'; 
@@ -475,7 +632,7 @@
                 const fingers = countFingers(lm);
                 processGameLogic(fingers);
             } else {
-                if(appState === 'COUNTDOWN' || appState === 'FINALE') {
+                if(appState === 'COUNTDOWN') {
                     if (!isResetting) resetGame();
                 }
             }
@@ -512,6 +669,7 @@
             playCountSound(num);
         }
 
+        // --- FINALE SEQUENCE ---
         function startFinaleSequence() {
             if(appState === 'FINALE') return;
             appState = 'FINALE';
@@ -528,17 +686,15 @@
                 greetingBox.classList.remove('fade-out-transition');
                 countDisplay.classList.remove('fade-out-transition');
                 guideText.classList.remove('fade-out-transition');
-                guideText.innerText = "Hãy giữ tay để tận hưởng...";
+                guideText.innerText = "Hãy tận hưởng khoảnh khắc này..."; 
+                setTimeout(() => guideText.style.opacity = 0, 5000);
             }, 1500);
 
             fireworks = []; 
 
             setTimeout(() => {
-                if(appState !== 'FINALE') return; 
-                // Target cao hơn (0.35) và speed trong class đã được tăng
                 fireworks.push(new Firework(canvas.width / 2, canvas.height, canvas.height * 0.35, 'big-opener'));
                 setTimeout(() => {
-                    if(appState !== 'FINALE') return;
                     AUDIO.bgFinale.play().catch(e => console.log(e));
                     
                     floatContainer.style.display = 'block';
@@ -548,25 +704,126 @@
                     if(floatInterval) clearInterval(floatInterval);
                     floatInterval = setInterval(spawnFloatingItem, 2500);
                     finaleOngoing = true; 
+
+                    // --- TIMER ĐẾM NGƯỢC FINALE ---
+                    let remainingSeconds = Math.floor(FINALE_DURATION / 1000);
+                    finaleTimer.style.display = 'block';
+                    finaleTimer.style.opacity = 1;
+                    finaleTimer.innerText = `Tận hưởng nhé bạn yêu: ${remainingSeconds}s`;
+
+                    if(finaleTimerInterval) clearInterval(finaleTimerInterval);
+                    finaleTimerInterval = setInterval(() => {
+                        remainingSeconds--;
+                        if(remainingSeconds > 0) {
+                            finaleTimer.innerText = `Tận hưởng nhé bạn yêu: ${remainingSeconds}s`;
+                        } else {
+                            finaleTimer.innerText = `Tận hưởng nhé bạn yêu: 0s`;
+                            clearInterval(finaleTimerInterval);
+                        }
+                    }, 1000);
+
+                    // Hẹn giờ kết thúc
+                    setTimeout(endFinaleAndStartLetter, FINALE_DURATION);
+
                 }, 4000); 
             }, 2000); 
         }
+
+        function endFinaleAndStartLetter() {
+            finaleOngoing = false; 
+            if(floatInterval) clearInterval(floatInterval); 
+            if(finaleTimerInterval) clearInterval(finaleTimerInterval); 
+            
+            // Ẩn Timer
+            finaleTimer.style.opacity = 0;
+            setTimeout(() => finaleTimer.style.display = 'none', 1000);
+
+            fadeOutAudio(AUDIO.bgFinale, 3000);
+            
+            floatContainer.style.opacity = '0';
+            setTimeout(() => {
+                floatContainer.innerHTML = ''; 
+                floatContainer.style.display = 'none';
+            }, 3000);
+
+            setTimeout(() => {
+                showLetterSequence();
+            }, 5000); 
+        }
+
+        // --- LETTER LOGIC ---
+        function showLetterSequence() {
+            appState = 'LETTER';
+            letterContainer.style.display = 'flex'; 
+            letterControls.style.opacity = 1;
+            
+            // Reset trạng thái sách
+            theBook.classList.remove('open');
+            currentLetterPage = 0;
+            
+            btnOpenLetter.style.display = 'block';
+            btnOpenLetter.innerText = "Mở Thiệp 💌"; 
+            btnResetGame.style.display = 'none';
+        }
+
+        btnOpenLetter.addEventListener('click', () => {
+            btnOpenLetter.style.display = 'none'; 
+            theBook.classList.add('open'); 
+            
+            // Chỉ bật nhạc nếu đang tắt
+            if(AUDIO.bgLetter.paused) {
+                AUDIO.bgLetter.play().catch(e=>console.log(e));
+            }
+            
+            currentLetterPage = 0;
+            letterText.innerText = LETTER_MESSAGES[0];
+            btnNextMsg.style.display = 'inline-block';
+            btnCloseLetter.style.display = 'none';
+        });
+
+        btnNextMsg.addEventListener('click', () => {
+            currentLetterPage++;
+            letterText.style.opacity = 0;
+            setTimeout(() => {
+                if (currentLetterPage < LETTER_MESSAGES.length) {
+                    letterText.innerText = LETTER_MESSAGES[currentLetterPage];
+                    letterText.style.opacity = 1;
+                }
+                
+                if (currentLetterPage >= 2) { 
+                    btnNextMsg.style.display = 'none';
+                    btnCloseLetter.style.display = 'inline-block';
+                }
+            }, 300);
+        });
+
+        btnCloseLetter.addEventListener('click', () => {
+            theBook.classList.remove('open'); 
+            setTimeout(() => {
+                btnOpenLetter.style.display = 'block';
+                btnOpenLetter.innerText = "Mở lại 💌";
+                btnResetGame.style.display = 'block'; 
+            }, 1000); 
+        });
+
+        btnResetGame.addEventListener('click', () => {
+            fadeOutAudio(AUDIO.bgLetter, 1000);
+            resetGame();
+        });
 
         function resetGame() {
             if (isResetting) return;
             isResetting = true; 
             
+            letterContainer.style.display = 'none';
+            letterControls.style.opacity = 0;
             floatContainer.style.opacity = '0';
             
-            const fadeAudio = setInterval(() => {
-                if(AUDIO.bgFinale.volume > 0.1) AUDIO.bgFinale.volume -= 0.1;
-                else {
-                    clearInterval(fadeAudio);
-                    AUDIO.bgFinale.pause();
-                    AUDIO.bgFinale.currentTime = 0;
-                    AUDIO.bgFinale.volume = 0.8;
-                }
-            }, 50);
+            finaleTimer.style.opacity = 0;
+            finaleTimer.style.display = 'none';
+            if(finaleTimerInterval) clearInterval(finaleTimerInterval);
+
+            if(!AUDIO.bgFinale.paused) fadeOutAudio(AUDIO.bgFinale, 500);
 
             setTimeout(() => {
                 appState = 'WAITING';
@@ -583,6 +840,7 @@
                 greetingBox.classList.remove('fade-out-transition');
                 countDisplay.classList.remove('fade-out-transition');
                 guideText.classList.remove('fade-out-transition');
+                guideText.style.opacity = 1; 
                 
                 greetingBox.style.display = 'none'; 
                 countDisplay.style.display = 'none';
@@ -594,7 +852,7 @@
                 AUDIO.bgIntro.play().catch(e => console.log("User interaction needed"));
 
                 isResetting = false; 
-            }, 800);
+            }, 1000);
         }
 
         function spawnFloatingItem() {
@@ -605,8 +863,12 @@
             msgEl.innerText = MESSAGES[floatIndex % MESSAGES.length];
             const imgEl = document.createElement('div'); imgEl.classList.add('float-item', 'img-box');
             const img = document.createElement('img');
-            const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
-            img.src = IMAGES[randomImgIndex]; imgEl.appendChild(img);
+            
+            // Chọn ảnh ngẫu nhiên từ danh sách đã lọc (FLOATING_IMAGES)
+            const randomImgIndex = Math.floor(Math.random() * FLOATING_IMAGES.length);
+            img.src = FLOATING_IMAGES[randomImgIndex]; 
+            
+            imgEl.appendChild(img);
             
             const randomLeft = 5 + Math.random() * 35; 
             const randomRight = 55 + Math.random() * 35;

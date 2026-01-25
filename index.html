@@ -132,7 +132,7 @@
         .input_video { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
         #camera-overlay { position: absolute; top:0; left:0; width:100%; height:100%; }
 
-        /* --- 3D LETTER STYLES --- */
+        /* --- 3D LETTER STYLES (ĐÃ SỬA LỖI HIỂN THỊ) --- */
         #letter-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
             display: none; justify-content: center; align-items: center;
@@ -141,9 +141,11 @@
 
         .book-wrapper {
             position: relative; width: 750px; height: 500px; 
-            transform-style: preserve-3d; transition: transform 1s ease-in-out;
+            transform-style: preserve-3d; 
+            transition: transform 1s ease-in-out;
             animation: cardFloatUp 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            pointer-events: auto; flex-shrink: 0;
+            pointer-events: auto; 
+            flex-shrink: 0; margin: auto;
         }
         @keyframes cardFloatUp { from { transform: translateY(100vh); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
@@ -153,11 +155,12 @@
         }
         
         .book-page {
-            position: absolute; top: 0; width: 50%; height: 100%;
+            position: absolute; top: 0; bottom: 0; width: 50%; height: 100%;
             transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s;
             transform-origin: left center; backface-visibility: hidden;
             box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
             animation: glowPulse 2s infinite alternate;
+            background-color: #fff;
         }
 
         /* Bìa Trước */
@@ -166,9 +169,10 @@
             background: url('res/image/love1.png') center/cover no-repeat;
             background-color: #ffb6c1; 
             border-radius: 0 15px 15px 0;
-            position: relative;
+            position: absolute; /* Đảm bảo position */
             transform: rotateY(0deg); 
             border: 8px double #ff69b4; border-left: none; box-sizing: border-box;
+            display: flex; justify-content: center; align-items: center;
         }
 
         .cover-front::after {
@@ -177,27 +181,29 @@
             text-shadow: 0 0 10px #ff0000;
             background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 50px;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: max-content; max-width: 80%; text-align: center;
         }
 
-        /* Trang Phải (Nội dung) */
+        /* Trang Phải (Nội dung) - Đã sửa lỗi */
         .page-right {
-            left: 50%; z-index: 10; background: #fff;
+            right: 0; z-index: 10; background: #fff;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 30px; box-sizing: border-box; text-align: center;
             font-family: 'Nunito', sans-serif; color: #d63384;
             border: 8px double #ff69b4; border-left: none; border-radius: 0 15px 15px 0;
+            overflow: hidden;
+            position: absolute;
         }
 
-        /* Trang Trái (Ảnh) */
+        /* Trang Trái (Ảnh) - Đã sửa lỗi */
         .page-left {
             left: 0; z-index: 10; background: #fff5ee;
             border-radius: 15px 0 0 15px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 15px; box-sizing: border-box;
             border: 8px double #ff69b4; border-right: none;
-            opacity: 0; transform: rotateY(0deg); 
+            opacity: 0; 
+            transform: rotateY(0deg); 
+            position: absolute;
         }
         .page-left img {
             width: 85%; height: 42%; object-fit: cover; margin: 10px 0;
@@ -208,13 +214,14 @@
 
         /* Trạng thái Mở */
         .book-wrapper.open .cover-front { transform: rotateY(-180deg); opacity: 0; pointer-events: none; }
-        .book-wrapper.open .page-left { opacity: 1; transition-delay: 0.2s; }
+        .book-wrapper.open .page-left { opacity: 1; }
         
         .text-content {
             font-size: 1.4rem; line-height: 1.6; font-weight: 600;
             margin-bottom: 25px; min-height: 180px; width: 90%;
             display: flex; align-items: center; justify-content: center;
             text-shadow: 0 0 1px rgba(214, 51, 132, 0.1);
+            position: relative; z-index: 2; 
         }
         
         .ctrl-btn {
@@ -238,29 +245,25 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* --- HIỆU ỨNG TIM BAY TỪ THƯ (NEW CODE) --- */
-        .floating-heart {
+        /* --- TRÁI TIM BAY (Tim bay trong thư) --- */
+        .heart-particle {
             position: absolute;
-            font-size: 1.5rem;
+            bottom: 0;
+            font-size: 24px;
+            color: #ff0055;
             user-select: none;
-            pointer-events: none;
-            z-index: 300; /* Cao hơn sách để nổi lên trên */
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-            animation: floatHeartAnim 2.5s ease-out forwards;
+            pointer-events: none; 
+            z-index: 1; 
+            animation: heartFly 3s linear forwards;
+            opacity: 0;
         }
-        
-        @keyframes floatHeartAnim {
-            0% { 
-                transform: translate(-50%, 0) scale(0.5) rotate(0deg); 
-                opacity: 0; 
-            }
-            10% { opacity: 1; }
-            50% { transform: translate(calc(-50% + 20px), -100px) scale(1.2) rotate(20deg); }
-            100% { 
-                transform: translate(calc(-50% - 20px), -250px) scale(1) rotate(-20deg); 
-                opacity: 0; 
-            }
+
+        @keyframes heartFly {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.8; transform: translateY(-20px) scale(1); }
+            100% { transform: translateY(-350px) scale(1.2) rotate(var(--rotation)); opacity: 0; }
         }
+
     </style>
 </head>
 <body>
@@ -302,7 +305,8 @@
                 <img src="res/image/love1.png" alt="Love 1">
                 <img src="res/image/love2.jpg" alt="Love 2">
             </div>
-            <div class="book-page page-right">
+            
+            <div class="book-page page-right" id="letter-content-page">
                 <div class="text-content" id="letter-text">Loading message...</div>
                 <button class="ctrl-btn" id="btn-next-msg">Đọc tiếp ❤️</button>
                 <button class="ctrl-btn" id="btn-close-letter" style="display:none;">Đóng thiệp</button>
@@ -441,13 +445,14 @@
         const btnCloseLetter = document.getElementById('btn-close-letter');
         const btnResetGame = document.getElementById('btn-reset-game');
         const letterText = document.getElementById('letter-text');
+        const letterPageRight = document.getElementById('letter-content-page'); 
 
         let appState = 'LANDING'; 
         let targetNumber = 5; 
         let fireworks = [];
         let stars = [];
         let floatInterval;
-        let finaleTimerInterval; // Interval cho timer
+        let finaleTimerInterval; 
         let floatIndex = 0;
         let finaleOngoing = false;
         let isResetting = false;
@@ -455,6 +460,9 @@
         let screenFlash = 0; 
         let flashColor = '255, 105, 180';
         let currentLetterPage = 0;
+        
+        // Biến quản lý tim bay
+        let heartInterval;
 
         // --- INIT & RESIZE ---
         function resize() {
@@ -783,51 +791,31 @@
             btnResetGame.style.display = 'none';
         }
 
-        // --- HÀM TẠO HIỆU ỨNG TIM BAY (NEW CODE) ---
-        function spawnLetterHearts() {
-            const heartCount = 40; 
+        // --- HÀM TẠO TIM BAY ---
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            heart.innerHTML = Math.random() < 0.5 ? '❤️' : '💗';
             
-            for (let i = 0; i < heartCount; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.classList.add('floating-heart');
-                    
-                    // Random màu: Hồng đậm, Đỏ, Hồng nhạt
-                    const colors = ['#ff1493', '#ff0000', '#ff69b4'];
-                    heart.style.color = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    heart.innerText = '❤'; 
-                    
-                    // Random vị trí X xung quanh tâm màn hình
-                    const randomOffset = (Math.random() - 0.5) * 250; 
-                    heart.style.left = `calc(50% + ${randomOffset}px)`;
-                    
-                    // Vị trí Y: Dưới tâm màn hình một chút
-                    heart.style.top = '65%'; 
-                    
-                    // Random kích thước
-                    const size = 1 + Math.random() * 1.5;
-                    heart.style.fontSize = `${size}rem`;
+            // Vị trí ngẫu nhiên chiều ngang
+            heart.style.left = (Math.random() * 90) + '%';
+            
+            // Random góc xoay cho tự nhiên
+            heart.style.setProperty('--rotation', (Math.random() * 60 - 30) + 'deg');
+            
+            // Thêm vào DOM
+            letterPageRight.appendChild(heart);
 
-                    document.body.appendChild(heart);
-
-                    // Xóa element sau khi animation kết thúc
-                    setTimeout(() => {
-                        if (heart.parentNode) heart.remove();
-                    }, 2500);
-                }, i * 60); 
-            }
+            // Xóa sau khi bay xong
+            setTimeout(() => {
+                if (heart.parentNode) heart.remove();
+            }, 3500);
         }
 
         btnOpenLetter.addEventListener('click', () => {
             btnOpenLetter.style.display = 'none'; 
             theBook.classList.add('open'); 
             
-            // --- GỌI HIỆU ỨNG TIM BAY (NEW CODE) ---
-            spawnLetterHearts(); 
-            // ----------------------------------------
-            
-            // Chỉ bật nhạc nếu đang tắt
             if(AUDIO.bgLetter.paused) {
                 AUDIO.bgLetter.play().catch(e=>console.log(e));
             }
@@ -836,6 +824,11 @@
             letterText.innerText = LETTER_MESSAGES[0];
             btnNextMsg.style.display = 'inline-block';
             btnCloseLetter.style.display = 'none';
+
+            // BẮT ĐẦU TIM BAY
+            if (heartInterval) clearInterval(heartInterval);
+            spawnHeart(); 
+            heartInterval = setInterval(spawnHeart, 800); 
         });
 
         btnNextMsg.addEventListener('click', () => {
@@ -856,6 +849,12 @@
 
         btnCloseLetter.addEventListener('click', () => {
             theBook.classList.remove('open'); 
+            
+            // DỪNG TIM BAY
+            if (heartInterval) clearInterval(heartInterval);
+            const existingHearts = document.querySelectorAll('.heart-particle');
+            existingHearts.forEach(h => h.remove());
+
             setTimeout(() => {
                 btnOpenLetter.style.display = 'block';
                 btnOpenLetter.innerText = "Mở lại 💌";
@@ -872,6 +871,11 @@
             if (isResetting) return;
             isResetting = true; 
             
+            // DỪNG TIM BAY KHI RESET
+            if (heartInterval) clearInterval(heartInterval);
+            const existingHearts = document.querySelectorAll('.heart-particle');
+            existingHearts.forEach(h => h.remove());
+
             letterContainer.style.display = 'none';
             letterControls.style.opacity = 0;
             floatContainer.style.opacity = '0';
@@ -921,7 +925,6 @@
             const imgEl = document.createElement('div'); imgEl.classList.add('float-item', 'img-box');
             const img = document.createElement('img');
             
-            // Chọn ảnh ngẫu nhiên từ danh sách đã lọc (FLOATING_IMAGES)
             const randomImgIndex = Math.floor(Math.random() * FLOATING_IMAGES.length);
             img.src = FLOATING_IMAGES[randomImgIndex]; 
             

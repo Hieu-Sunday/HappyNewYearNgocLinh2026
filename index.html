@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy New Year 2026 - Special for Ngoc Linh</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
@@ -16,6 +16,8 @@
         body {
             margin: 0; padding: 0; background-color: #000; overflow: hidden;
             font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
+            /* Ngăn kéo trang trên mobile */
+            overscroll-behavior: none; 
         }
 
         /* --- BACKGROUND LAYERS --- */
@@ -40,6 +42,7 @@
             color: #fff; background: linear-gradient(45deg, #ff0055, #ff00aa);
             border: 2px solid #fff; border-radius: 50px; cursor: pointer;
             box-shadow: 0 0 30px #ff00aa; transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center; max-width: 90%;
         }
         #start-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px #ff00aa; }
         
@@ -83,7 +86,7 @@
         #guide-text {
             position: absolute; bottom: 15%; font-family: 'Nunito', sans-serif; font-weight: 700;
             font-size: 1.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 0 10px #000;
-            width: 100%; text-align: center; transition: opacity 1s;
+            width: 100%; text-align: center; transition: opacity 1s; padding: 0 10px;
         }
 
         /* Timer cho phần Finale */
@@ -140,9 +143,12 @@
         }
 
         .book-wrapper {
-            position: relative; width: 750px; height: 500px; 
+            position: relative; 
+            width: 750px; height: 500px; 
+            /* Cập nhật responsive cơ bản */
+            max-width: 95vw; max-height: 80vh; 
             transform-style: preserve-3d; 
-            transition: transform 1s ease-in-out;
+            transition: transform 1s ease-in-out, width 0.5s, height 0.5s;
             animation: cardFloatUp 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             pointer-events: auto; 
             flex-shrink: 0; margin: auto;
@@ -181,10 +187,7 @@
             text-shadow: 0 0 10px #ff0000;
             background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 50px;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            /* Đảm bảo chữ luôn căn giữa */
-            text-align: center;
-            width: fit-content;
-            margin: 0 auto;
+            text-align: center; width: fit-content; margin: 0 auto;
         }
 
         /* Trang Phải (Nội dung) */
@@ -225,7 +228,7 @@
             margin-bottom: 25px; min-height: 180px; width: 90%;
             display: flex; align-items: center; justify-content: center;
             text-shadow: 0 0 1px rgba(214, 51, 132, 0.1);
-            position: relative; z-index: 2; 
+            position: relative; z-index: 2; overflow-y: auto;
         }
         
         .ctrl-btn {
@@ -245,27 +248,76 @@
         }
         #btn-open-letter {
              padding: 18px 50px; font-size: 1.8rem; background: #ff0055; color: white; border: none; border-radius: 50px;
-             box-shadow: 0 0 25px #ff0055; cursor: pointer; animation: pulse 2s infinite; 
+             box-shadow: 0 0 25px #ff0055; cursor: pointer; animation: pulse 2s infinite; white-space: nowrap;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* --- TRÁI TIM BAY (Tim bay trong thư) --- */
+        /* --- TRÁI TIM BAY --- */
         .heart-particle {
-            position: absolute;
-            bottom: 0;
-            font-size: 24px;
-            color: #ff0055;
-            user-select: none;
-            pointer-events: none; 
-            z-index: 1; 
-            animation: heartFly 3s linear forwards;
-            opacity: 0;
+            position: absolute; bottom: 0; font-size: 24px; color: #ff0055;
+            user-select: none; pointer-events: none; z-index: 1; 
+            animation: heartFly 3s linear forwards; opacity: 0;
         }
 
         @keyframes heartFly {
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
             10% { opacity: 0.8; transform: translateY(-20px) scale(1); }
             100% { transform: translateY(-350px) scale(1.2) rotate(var(--rotation)); opacity: 0; }
+        }
+
+        /* ==========================================================================
+           TÙY CHỈNH CHO ĐIỆN THOẠI (LANDSCAPE MODE)
+           Sử dụng khi chiều cao màn hình nhỏ hơn 600px (thường là điện thoại xoay ngang)
+           ========================================================================== */
+        @media screen and (max-height: 600px) and (orientation: landscape) {
+            /* 1. Nút bắt đầu nhỏ lại */
+            #start-btn { font-size: 1rem; padding: 10px 25px; }
+
+            /* 2. Chữ chào mừng & Đếm ngược: Dùng vh để scale theo chiều cao */
+            .greet-line1 { font-size: 10vh; margin-bottom: 2px; }
+            .greet-line2 { font-size: 12vh; letter-spacing: 1px; }
+            #countdown-number { font-size: 35vh; margin-top: 5px; }
+            #guide-text { font-size: 5vh; bottom: 5%; }
+            #finale-timer { font-size: 6vh; bottom: 10px; }
+
+            /* 3. Camera thu nhỏ góc phải */
+            #camera-box { 
+                width: 120px; height: 90px; 
+                bottom: 5px; right: 5px; 
+                border-width: 1px;
+            }
+
+            /* 4. Tin nhắn & Ảnh trôi: Giảm kích thước */
+            .msg-box { width: 35vw; padding: 5px 10px; font-size: 4vh; border-radius: 10px; }
+            .img-box { width: 30vw; min-height: 20vh; padding: 4px; border-radius: 8px; }
+
+            /* 5. CUỐN SÁCH / THIỆP - QUAN TRỌNG NHẤT */
+            .book-wrapper {
+                /* Tính toán lại theo chiều cao màn hình (vh) để không bị tràn */
+                height: 75vh; 
+                /* Giữ tỷ lệ khung hình ~1.5 (giống 750/500 gốc) */
+                width: 112.5vh; 
+                /* Đảm bảo không quá rộng so với màn hình */
+                max-width: 85vw;
+            }
+
+            .cover-front::after { font-size: 10vh; padding: 1vh 2vh; }
+            
+            .page-right { padding: 10px; }
+            .text-content { 
+                font-size: 4.5vh; /* Chữ trong thư scale theo chiều cao */
+                min-height: auto; 
+                margin-bottom: 1vh;
+                line-height: 1.3;
+            }
+            
+            .ctrl-btn { padding: 1vh 3vh; font-size: 4vh; margin-top: 5px; }
+            #btn-open-letter { font-size: 5vh; padding: 1.5vh 4vh; }
+            #letter-controls { bottom: 5%; }
+
+            /* Ảnh trong thiệp */
+            .page-left { padding: 5px; }
+            .page-left img { height: 40%; margin: 2px 0; border-width: 2px; }
         }
 
     </style>
@@ -442,13 +494,9 @@
             NL_IMAGES.push(`res/image/NL${i}.jpg`);
         }
         
-        // Mảng tổng hợp để preload
         const IMAGES = [...BASE_IMAGES, ...NL_IMAGES];
-
-        // Ảnh trôi chỉ lấy từ bộ ảnh mới (NL1...NL50)
         const FLOATING_IMAGES = NL_IMAGES;
 
-        // Nội dung thư
         const LETTER_MESSAGES = [
             "Gửi Ngọc Linh,\nNăm mới đã đến rồi, anh muốn gửi đến em những lời chúc tốt đẹp nhất. Cảm ơn em vì đã xuất hiện và làm cuộc sống của anh trở nên rực rỡ hơn bao giờ hết. 🌹",
             "Năm 2026 này, anh mong em sẽ luôn cười thật tươi, đạt được mọi ước mơ mà em ấp ủ. Dù có chuyện gì xảy ra, hãy nhớ rằng luôn có anh ở phía sau ủng hộ em hết mình. 💪❤️",
@@ -473,7 +521,6 @@
         const floatContainer = document.getElementById('floating-container');
         const finaleTimer = document.getElementById('finale-timer'); 
 
-        // Element thiệp
         const letterContainer = document.getElementById('letter-container');
         const theBook = document.getElementById('the-book');
         const letterControls = document.getElementById('letter-controls');
@@ -493,18 +540,17 @@
         let floatIndex = 0;
         let finaleOngoing = false;
         let isResetting = false;
-        let shuffledImages = []; // Biến lưu danh sách ảnh đã xáo trộn
+        let shuffledImages = [];
         
         let screenFlash = 0; 
         let flashColor = '255, 105, 180';
         let currentLetterPage = 0;
-        
-        // Biến quản lý tim bay
         let heartInterval;
 
         // --- INIT & RESIZE ---
         function resize() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            // Cập nhật độ phân giải overlay để khớp với camera, CSS sẽ lo phần hiển thị
             overlayCanvas.width = 160; overlayCanvas.height = 120;
         }
         window.addEventListener('resize', resize);
@@ -630,7 +676,7 @@
 
         // --- PRELOAD LOGIC ---
         let imagesLoaded = 0;
-        let totalImages = 0; // Sẽ cập nhật sau khi mảng IMAGES đầy đủ
+        let totalImages = 0;
 
         function preloadAllImages() {
             totalImages = IMAGES.length;
@@ -769,7 +815,6 @@
                     floatInterval = setInterval(spawnFloatingItem, 2500);
                     finaleOngoing = true; 
 
-                    // --- TIMER ĐẾM NGƯỢC FINALE ---
                     let remainingSeconds = Math.floor(FINALE_DURATION / 1000);
                     finaleTimer.style.display = 'block';
                     finaleTimer.style.opacity = 1;
@@ -786,7 +831,6 @@
                         }
                     }, 1000);
 
-                    // Hẹn giờ kết thúc
                     setTimeout(endFinaleAndStartLetter, FINALE_DURATION);
 
                 }, 4000); 
@@ -798,7 +842,6 @@
             if(floatInterval) clearInterval(floatInterval); 
             if(finaleTimerInterval) clearInterval(finaleTimerInterval); 
             
-            // Ẩn Timer
             finaleTimer.style.opacity = 0;
             setTimeout(() => finaleTimer.style.display = 'none', 1000);
 
@@ -821,7 +864,6 @@
             letterContainer.style.display = 'flex'; 
             letterControls.style.opacity = 1;
             
-            // Reset trạng thái sách
             theBook.classList.remove('open');
             currentLetterPage = 0;
             
@@ -830,25 +872,14 @@
             btnResetGame.style.display = 'none';
         }
 
-        // --- HÀM TẠO TIM BAY ---
         function spawnHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart-particle');
             heart.innerHTML = Math.random() < 0.5 ? '❤️' : '💗';
-            
-            // Vị trí ngẫu nhiên chiều ngang
             heart.style.left = (Math.random() * 90) + '%';
-            
-            // Random góc xoay cho tự nhiên
             heart.style.setProperty('--rotation', (Math.random() * 60 - 30) + 'deg');
-            
-            // Thêm vào DOM
             letterPageRight.appendChild(heart);
-
-            // Xóa sau khi bay xong
-            setTimeout(() => {
-                if (heart.parentNode) heart.remove();
-            }, 3500);
+            setTimeout(() => { if (heart.parentNode) heart.remove(); }, 3500);
         }
 
         btnOpenLetter.addEventListener('click', () => {
@@ -864,7 +895,6 @@
             btnNextMsg.style.display = 'inline-block';
             btnCloseLetter.style.display = 'none';
 
-            // BẮT ĐẦU TIM BAY
             if (heartInterval) clearInterval(heartInterval);
             spawnHeart(); 
             heartInterval = setInterval(spawnHeart, 800); 
@@ -878,7 +908,6 @@
                     letterText.innerText = LETTER_MESSAGES[currentLetterPage];
                     letterText.style.opacity = 1;
                 }
-                
                 if (currentLetterPage >= 2) { 
                     btnNextMsg.style.display = 'none';
                     btnCloseLetter.style.display = 'inline-block';
@@ -888,8 +917,6 @@
 
         btnCloseLetter.addEventListener('click', () => {
             theBook.classList.remove('open'); 
-            
-            // DỪNG TIM BAY
             if (heartInterval) clearInterval(heartInterval);
             const existingHearts = document.querySelectorAll('.heart-particle');
             existingHearts.forEach(h => h.remove());
@@ -910,7 +937,6 @@
             if (isResetting) return;
             isResetting = true; 
             
-            // DỪNG TIM BAY KHI RESET
             if (heartInterval) clearInterval(heartInterval);
             const existingHearts = document.querySelectorAll('.heart-particle');
             existingHearts.forEach(h => h.remove());
@@ -958,13 +984,8 @@
         function spawnFloatingItem() {
             if(appState !== 'FINALE') return;
 
-            // --- LOGIC XỬ LÝ ẢNH KHÔNG TRÙNG LẶP ---
-            // Nếu danh sách rỗng (lần đầu chạy hoặc đã hiện hết 50 ảnh), thì nạp lại và xáo trộn
             if (shuffledImages.length === 0) {
-                // 1. Tạo danh sách index từ 0 đến độ dài mảng ảnh
                 let indices = Array.from({length: FLOATING_IMAGES.length}, (_, i) => i);
-                
-                // 2. Thuật toán Fisher-Yates Shuffle để xáo trộn ngẫu nhiên
                 for (let i = indices.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [indices[i], indices[j]] = [indices[j], indices[i]];
@@ -972,17 +993,13 @@
                 shuffledImages = indices;
             }
 
-            // Lấy một index từ danh sách đã xáo trộn (cắt bớt mảng đi 1 phần tử)
             const uniqueIndex = shuffledImages.pop();
-            // ---------------------------------------
-
             const layoutType = Math.random() > 0.5 ? 0 : 1; 
             const msgEl = document.createElement('div'); msgEl.classList.add('float-item', 'msg-box');
             msgEl.innerText = MESSAGES[floatIndex % MESSAGES.length];
             const imgEl = document.createElement('div'); imgEl.classList.add('float-item', 'img-box');
             const img = document.createElement('img');
             
-            // Gán ảnh theo index không trùng lặp vừa lấy được
             img.src = FLOATING_IMAGES[uniqueIndex]; 
             
             imgEl.appendChild(img);

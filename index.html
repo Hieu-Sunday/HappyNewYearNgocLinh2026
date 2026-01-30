@@ -16,7 +16,6 @@
         body {
             margin: 0; padding: 0; background-color: #000; overflow: hidden;
             font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
-            /* Ngăn kéo trang trên mobile */
             overscroll-behavior: none; 
         }
 
@@ -145,7 +144,6 @@
         .book-wrapper {
             position: relative; 
             width: 750px; height: 500px; 
-            /* Cập nhật responsive cơ bản */
             max-width: 95vw; max-height: 80vh; 
             transform-style: preserve-3d; 
             transition: transform 1s ease-in-out, width 0.5s, height 0.5s;
@@ -169,7 +167,7 @@
             background-color: #fff;
         }
 
-        /* Bìa Trước - Căn chỉnh chính xác chữ For My Love */
+        /* Bìa Trước */
         .cover-front {
             left: 50%; z-index: 20;
             background: url('res/image/love1.png') center/cover no-repeat;
@@ -219,7 +217,6 @@
         }
         .page-left img:last-child { transform: rotate(3deg); }
 
-        /* Trạng thái Mở */
         .book-wrapper.open .cover-front { transform: rotateY(-180deg); opacity: 0; pointer-events: none; }
         .book-wrapper.open .page-left { opacity: 1; }
         
@@ -252,7 +249,6 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* --- TRÁI TIM BAY --- */
         .heart-particle {
             position: absolute; bottom: 0; font-size: 24px; color: #ff0055;
             user-select: none; pointer-events: none; z-index: 1; 
@@ -267,55 +263,45 @@
 
         /* ==========================================================================
            TÙY CHỈNH CHO ĐIỆN THOẠI (LANDSCAPE MODE)
-           Sử dụng khi chiều cao màn hình nhỏ hơn 600px (thường là điện thoại xoay ngang)
            ========================================================================== */
         @media screen and (max-height: 600px) and (orientation: landscape) {
-            /* 1. Nút bắt đầu nhỏ lại */
             #start-btn { font-size: 1rem; padding: 10px 25px; }
 
-            /* 2. Chữ chào mừng & Đếm ngược: Dùng vh để scale theo chiều cao */
             .greet-line1 { font-size: 10vh; margin-bottom: 2px; }
             .greet-line2 { font-size: 12vh; letter-spacing: 1px; }
             #countdown-number { font-size: 35vh; margin-top: 5px; }
             #guide-text { font-size: 5vh; bottom: 5%; }
             #finale-timer { font-size: 6vh; bottom: 10px; }
 
-            /* 3. Camera thu nhỏ góc phải */
-            #camera-box { 
-                width: 120px; height: 90px; 
-                bottom: 5px; right: 5px; 
+            #camera-box { width: 120px; height: 90px; bottom: 5px; right: 5px; border-width: 1px; }
+
+            /* --- CHỈNH SỬA PHẦN ẢNH TRÔI (Fix lỗi to và đè nhau) --- */
+            .msg-box { 
+                width: 25vw; /* Nhỏ lại, chỉ chiếm 25% chiều ngang */
+                padding: 5px; 
+                font-size: 3vh; /* Chữ nhỏ lại */
+                border-radius: 8px; 
                 border-width: 1px;
             }
-
-            /* 4. Tin nhắn & Ảnh trôi: Giảm kích thước */
-            .msg-box { width: 35vw; padding: 5px 10px; font-size: 4vh; border-radius: 10px; }
-            .img-box { width: 30vw; min-height: 20vh; padding: 4px; border-radius: 8px; }
-
-            /* 5. CUỐN SÁCH / THIỆP - QUAN TRỌNG NHẤT */
-            .book-wrapper {
-                /* Tính toán lại theo chiều cao màn hình (vh) để không bị tràn */
-                height: 75vh; 
-                /* Giữ tỷ lệ khung hình ~1.5 (giống 750/500 gốc) */
-                width: 112.5vh; 
-                /* Đảm bảo không quá rộng so với màn hình */
-                max-width: 85vw;
-            }
-
-            .cover-front::after { font-size: 10vh; padding: 1vh 2vh; }
-            
-            .page-right { padding: 10px; }
-            .text-content { 
-                font-size: 4.5vh; /* Chữ trong thư scale theo chiều cao */
+            .img-box { 
+                width: 20vw; /* Ảnh nhỏ lại, chỉ chiếm 20% chiều ngang */
                 min-height: auto; 
-                margin-bottom: 1vh;
-                line-height: 1.3;
+                padding: 3px; 
+                border-radius: 6px; 
             }
-            
+            /* Trôi nhanh hơn để màn hình thoáng (10s thay vì 15s) */
+            .float-item {
+                animation-duration: 10s; 
+            }
+
+            /* --- CHỈNH SỬA THIỆP --- */
+            .book-wrapper { height: 75vh; width: 112.5vh; max-width: 85vw; }
+            .cover-front::after { font-size: 10vh; padding: 1vh 2vh; }
+            .page-right { padding: 10px; }
+            .text-content { font-size: 4.5vh; min-height: auto; margin-bottom: 1vh; line-height: 1.3; }
             .ctrl-btn { padding: 1vh 3vh; font-size: 4vh; margin-top: 5px; }
             #btn-open-letter { font-size: 5vh; padding: 1.5vh 4vh; }
             #letter-controls { bottom: 5%; }
-
-            /* Ảnh trong thiệp */
             .page-left { padding: 5px; }
             .page-left img { height: 40%; margin: 2px 0; border-width: 2px; }
         }
@@ -377,7 +363,7 @@
 
     <script>
         // --- CẤU HÌNH ---
-        const FINALE_DURATION = 100000; // ms (Thời gian trôi ảnh/nhạc)
+        const FINALE_DURATION = 100000; 
 
         // --- ÂM THANH SYSTEM ---
         const AUDIO = {
@@ -432,8 +418,6 @@
         }
 
         // --- DỮ LIỆU ---
-        
-        // 50 Lời chúc mới dành riêng cho Linh
         const MESSAGES = [
             "🌸 Happy New Year 2026 Linh xinh đẹp! 🌸",
             "Năm mới chúc Linh mãi rạng ngời như ánh ban mai ☀️",
@@ -487,7 +471,6 @@
             "Happy New Year 2026 - Năm của Linh! 🎆"
         ];
 
-        // Tạo mảng ảnh động từ NL1.JPG đến NL50.JPG
         const BASE_IMAGES = ["res/image/love1.png", "res/image/love2.jpg", "res/image/back.png"];
         const NL_IMAGES = [];
         for (let i = 1; i <= 50; i++) {
@@ -550,7 +533,6 @@
         // --- INIT & RESIZE ---
         function resize() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            // Cập nhật độ phân giải overlay để khớp với camera, CSS sẽ lo phần hiển thị
             overlayCanvas.width = 160; overlayCanvas.height = 120;
         }
         window.addEventListener('resize', resize);
@@ -674,7 +656,6 @@
         }
         animateCanvas();
 
-        // --- PRELOAD LOGIC ---
         let imagesLoaded = 0;
         let totalImages = 0;
 
@@ -695,7 +676,6 @@
             });
         }
 
-        // --- GAME START LOGIC ---
         startBtn.addEventListener('click', async () => {
             AUDIO.bgIntro.play().catch(e => console.log("Cần tương tác người dùng để phát nhạc"));
             landingScreen.style.opacity = 0; 
@@ -779,7 +759,6 @@
             playCountSound(num);
         }
 
-        // --- FINALE SEQUENCE ---
         function startFinaleSequence() {
             if(appState === 'FINALE') return;
             appState = 'FINALE';
@@ -858,7 +837,6 @@
             }, 5000); 
         }
 
-        // --- LETTER LOGIC ---
         function showLetterSequence() {
             appState = 'LETTER';
             letterContainer.style.display = 'flex'; 
@@ -1001,7 +979,6 @@
             const img = document.createElement('img');
             
             img.src = FLOATING_IMAGES[uniqueIndex]; 
-            
             imgEl.appendChild(img);
             
             const randomLeft = 5 + Math.random() * 35; 
@@ -1013,8 +990,9 @@
             floatContainer.appendChild(msgEl); floatContainer.appendChild(imgEl);
             floatIndex++;
             
-            setTimeout(() => { if(msgEl.parentNode) msgEl.remove(); }, 15000);
-            setTimeout(() => { if(imgEl.parentNode) imgEl.remove(); }, 15000);
+            // Sử dụng animationend để tự xóa khi chạy xong (tương thích mọi tốc độ animation)
+            msgEl.addEventListener('animationend', () => { if(msgEl.parentNode) msgEl.remove(); });
+            imgEl.addEventListener('animationend', () => { if(imgEl.parentNode) imgEl.remove(); });
         }
     </script>
 </body>

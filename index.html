@@ -16,8 +16,7 @@
         body {
             margin: 0; padding: 0; background-color: #000; overflow: hidden;
             font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
-            /* Ngăn chặn zoom trên mobile */
-            touch-action: none;
+            touch-action: none; /* Chặn zoom/kéo trên mobile */
         }
 
         /* --- BACKGROUND LAYERS --- */
@@ -89,7 +88,6 @@
             width: 100%; text-align: center; transition: opacity 1s; padding: 0 10px; box-sizing: border-box;
         }
 
-        /* Timer cho phần Finale */
         #finale-timer {
             position: absolute; bottom: 30px; left: 0; width: 100%;
             text-align: center; z-index: 150; pointer-events: none;
@@ -166,7 +164,7 @@
             background-color: #fff;
         }
 
-        /* Bìa Trước - Căn chỉnh chính xác chữ For My Love */
+        /* Bìa Trước */
         .cover-front {
             left: 50%; z-index: 20;
             background: url('res/image/love1.png') center/cover no-repeat;
@@ -184,9 +182,7 @@
             text-shadow: 0 0 10px #ff0000;
             background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 50px;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            text-align: center;
-            width: fit-content;
-            margin: 0 auto;
+            text-align: center; width: fit-content; margin: 0 auto;
         }
 
         /* Trang Phải (Nội dung) */
@@ -196,8 +192,7 @@
             padding: 30px; box-sizing: border-box; text-align: center;
             font-family: 'Nunito', sans-serif; color: #d63384;
             border: 8px double #ff69b4; border-left: none; border-radius: 0 15px 15px 0;
-            overflow: hidden;
-            position: absolute;
+            overflow: hidden; position: absolute;
         }
 
         /* Trang Trái (Ảnh) */
@@ -207,9 +202,7 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 15px; box-sizing: border-box;
             border: 8px double #ff69b4; border-right: none;
-            opacity: 0; 
-            transform: rotateY(0deg); 
-            position: absolute;
+            opacity: 0; transform: rotateY(0deg); position: absolute;
         }
         .page-left img {
             width: 85%; height: 42%; object-fit: cover; margin: 10px 0;
@@ -218,7 +211,6 @@
         }
         .page-left img:last-child { transform: rotate(3deg); }
 
-        /* Trạng thái Mở */
         .book-wrapper.open .cover-front { transform: rotateY(-180deg); opacity: 0; pointer-events: none; }
         .book-wrapper.open .page-left { opacity: 1; }
         
@@ -251,19 +243,12 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* --- TRÁI TIM BAY (Tim bay trong thư) --- */
+        /* Tim bay trong thư */
         .heart-particle {
-            position: absolute;
-            bottom: 0;
-            font-size: 24px;
-            color: #ff0055;
-            user-select: none;
-            pointer-events: none; 
-            z-index: 1; 
-            animation: heartFly 3s linear forwards;
-            opacity: 0;
+            position: absolute; bottom: 0; font-size: 24px; color: #ff0055;
+            user-select: none; pointer-events: none; z-index: 1; 
+            animation: heartFly 3s linear forwards; opacity: 0;
         }
-
         @keyframes heartFly {
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
             10% { opacity: 0.8; transform: translateY(-20px) scale(1); }
@@ -271,58 +256,71 @@
         }
 
         /* ----------------------------------------------------- */
-        /* --- RESPONSIVE MOBILE (PHẦN THÊM MỚI QUAN TRỌNG) --- */
+        /* --- RESPONSIVE MOBILE - DỌC & NGANG (ALL MODES) --- */
         /* ----------------------------------------------------- */
-        @media screen and (max-width: 768px) {
-            
-            /* 1. Màn hình chờ & Chữ chào */
+
+        /* 1. ĐIỆN THOẠI DỌC (PORTRAIT) */
+        @media screen and (orientation: portrait) and (max-width: 768px) {
             #start-btn { font-size: 1.2rem; padding: 15px 30px; width: 80%; }
             .greet-line1 { font-size: 2rem; }
             .greet-line2 { font-size: 2.5rem; letter-spacing: 1px; }
             #countdown-number { font-size: 8rem; margin-top: 10px; }
             #guide-text { font-size: 1rem; bottom: 12%; }
 
-            /* 2. Vật thể bay (Tin nhắn & Ảnh) - Thu nhỏ để không đè nhau */
-            .msg-box {
-                width: 42vw; /* Chiếm khoảng 42% màn hình */
-                padding: 10px; font-size: 0.9rem;
-                border-radius: 10px;
-                white-space: normal; /* Cho phép xuống dòng */
-            }
-            .img-box {
-                width: 40vw; /* Chiếm khoảng 40% màn hình */
-                min-height: auto;
-                padding: 4px;
-            }
-            /* Đảm bảo chúng không bao giờ rộng hơn 50% màn hình để xếp được 2 cột */
+            /* Vật thể bay nhỏ gọn */
+            .msg-box { width: 42vw; padding: 10px; font-size: 0.9rem; border-radius: 10px; white-space: normal; }
+            .img-box { width: 40vw; min-height: auto; padding: 4px; }
             .float-item { max-width: 48%; }
 
-            /* 3. Quyển sách 3D - Tự động co theo chiều ngang */
-            .book-wrapper {
-                width: 92vw; /* Gần như full màn hình */
-                height: 65vw; /* Chiều cao tự tính theo tỷ lệ */
-            }
+            /* Quyển sách 3D - Dọc thì full chiều ngang */
+            .book-wrapper { width: 95vw; height: 60vw; }
             .cover-front::after { font-size: 1.8rem; padding: 10px 20px; }
-            
-            .text-content {
-                font-size: 0.95rem; line-height: 1.4;
-                min-height: 120px; margin-bottom: 10px;
-                width: 100%;
-            }
+            .text-content { font-size: 0.95rem; line-height: 1.4; min-height: 120px; margin-bottom: 10px; width: 100%; }
             .page-right, .page-left { padding: 10px; border-width: 4px; }
             .page-left img { border-width: 2px; }
 
-            /* 4. Điều khiển & Camera */
+            /* Điều khiển & Camera */
             #letter-controls { bottom: 5%; width: 100%; align-items: center; }
             #btn-open-letter { font-size: 1.2rem; padding: 12px 40px; }
-            .ctrl-btn { font-size: 0.9rem; padding: 8px 20px; }
-            
-            #camera-box {
-                width: 100px; height: 75px; 
-                bottom: 10px; right: 10px;
-                opacity: 0.4; /* Mờ hơn để không che nội dung */
-            }
+            #camera-box { width: 100px; height: 75px; bottom: 10px; right: 10px; opacity: 0.4; }
             #finale-timer { font-size: 1.2rem; bottom: 80px; }
+        }
+
+        /* 2. ĐIỆN THOẠI NGANG (LANDSCAPE) - CHÌA KHÓA HIỂN THỊ GIỐNG PC */
+        @media screen and (orientation: landscape) and (max-height: 600px) {
+            /* Ẩn bớt UI không cần thiết để thoáng màn hình */
+            #guide-text { bottom: 5%; font-size: 1rem; }
+            
+            /* Tái tạo giao diện PC nhưng Scale theo CHIỀU CAO (vh) */
+            .book-wrapper {
+                height: 85vh !important; /* Chiếm 85% chiều cao màn hình */
+                width: 127vh !important; /* Tỷ lệ 1.5 của chiều cao (giữ đúng form chữ nhật) */
+                max-width: 90vw; /* Không để tràn ngang */
+                margin: auto;
+            }
+
+            /* Chữ và nội dung co giãn theo chiều cao */
+            .cover-front::after { font-size: 8vh; padding: 1vh 3vh; }
+            .text-content { font-size: 5vh; line-height: 1.3; min-height: auto; margin-bottom: 2vh; }
+            
+            /* Ảnh bên trái */
+            .page-left img { width: auto; height: 40%; }
+            
+            /* Nút bấm nhỏ gọn */
+            .ctrl-btn { font-size: 4vh; padding: 1vh 3vh; margin-top: 1vh; }
+            #btn-open-letter { font-size: 5vh; padding: 2vh 5vh; }
+            
+            /* Vật thể bay nhỏ đi để không che sách */
+            .msg-box { width: 30vh; font-size: 3vh; padding: 1vh; }
+            .img-box { width: 25vh; min-height: auto; }
+
+            /* Camera né sang góc và nhỏ lại */
+            #camera-box {
+                width: 15vh; height: 11vh;
+                bottom: 5px; right: 5px; opacity: 0.3;
+            }
+            #finale-timer { font-size: 4vh; bottom: 5px; left: 20px; text-align: left; width: auto; }
+            #letter-controls { bottom: 5vh; }
         }
 
     </style>
@@ -382,7 +380,7 @@
 
     <script>
         // --- CẤU HÌNH ---
-        const FINALE_DURATION = 100000; // ms (Thời gian trôi ảnh/nhạc)
+        const FINALE_DURATION = 100000; // ms
 
         // --- ÂM THANH SYSTEM ---
         const AUDIO = {
@@ -437,8 +435,6 @@
         }
 
         // --- DỮ LIỆU ---
-        
-        // 50 Lời chúc mới dành riêng cho Linh
         const MESSAGES = [
             "🌸 Happy New Year 2026 Linh xinh đẹp! 🌸",
             "Năm mới chúc Linh mãi rạng ngời như ánh ban mai ☀️",
@@ -492,20 +488,14 @@
             "Happy New Year 2026 - Năm của Linh! 🎆"
         ];
 
-        // Tạo mảng ảnh động từ NL1.JPG đến NL50.JPG
         const BASE_IMAGES = ["res/image/love1.png", "res/image/love2.jpg", "res/image/back.png"];
         const NL_IMAGES = [];
         for (let i = 1; i <= 50; i++) {
             NL_IMAGES.push(`res/image/NL${i}.jpg`);
         }
-        
-        // Mảng tổng hợp để preload
         const IMAGES = [...BASE_IMAGES, ...NL_IMAGES];
-
-        // Ảnh trôi chỉ lấy từ bộ ảnh mới (NL1...NL50)
         const FLOATING_IMAGES = NL_IMAGES;
 
-        // Nội dung thư
         const LETTER_MESSAGES = [
             "Gửi Ngọc Linh,\nNăm mới đã đến rồi, anh muốn gửi đến em những lời chúc tốt đẹp nhất. Cảm ơn em vì đã xuất hiện và làm cuộc sống của anh trở nên rực rỡ hơn bao giờ hết. 🌹",
             "Năm 2026 này, anh mong em sẽ luôn cười thật tươi, đạt được mọi ước mơ mà em ấp ủ. Dù có chuyện gì xảy ra, hãy nhớ rằng luôn có anh ở phía sau ủng hộ em hết mình. 💪❤️",
@@ -530,7 +520,6 @@
         const floatContainer = document.getElementById('floating-container');
         const finaleTimer = document.getElementById('finale-timer'); 
 
-        // Element thiệp
         const letterContainer = document.getElementById('letter-container');
         const theBook = document.getElementById('the-book');
         const letterControls = document.getElementById('letter-controls');
@@ -550,13 +539,11 @@
         let floatIndex = 0;
         let finaleOngoing = false;
         let isResetting = false;
-        let shuffledImages = []; // Biến lưu danh sách ảnh đã xáo trộn
+        let shuffledImages = [];
         
         let screenFlash = 0; 
         let flashColor = '255, 105, 180';
         let currentLetterPage = 0;
-        
-        // Biến quản lý tim bay
         let heartInterval;
 
         // --- INIT & RESIZE ---
@@ -685,9 +672,8 @@
         }
         animateCanvas();
 
-        // --- PRELOAD LOGIC ---
         let imagesLoaded = 0;
-        let totalImages = 0; // Sẽ cập nhật sau khi mảng IMAGES đầy đủ
+        let totalImages = 0;
 
         function preloadAllImages() {
             totalImages = IMAGES.length;
@@ -706,7 +692,6 @@
             });
         }
 
-        // --- GAME START LOGIC ---
         startBtn.addEventListener('click', async () => {
             AUDIO.bgIntro.play().catch(e => console.log("Cần tương tác người dùng để phát nhạc"));
             landingScreen.style.opacity = 0; 
@@ -790,11 +775,9 @@
             playCountSound(num);
         }
 
-        // --- FINALE SEQUENCE ---
         function startFinaleSequence() {
             if(appState === 'FINALE') return;
             appState = 'FINALE';
-            
             fadeOutAudio(AUDIO.bgIntro);
             
             greetingBox.classList.add('fade-out-transition');
@@ -826,7 +809,6 @@
                     floatInterval = setInterval(spawnFloatingItem, 2500);
                     finaleOngoing = true; 
 
-                    // --- TIMER ĐẾM NGƯỢC FINALE ---
                     let remainingSeconds = Math.floor(FINALE_DURATION / 1000);
                     finaleTimer.style.display = 'block';
                     finaleTimer.style.opacity = 1;
@@ -843,7 +825,6 @@
                         }
                     }, 1000);
 
-                    // Hẹn giờ kết thúc
                     setTimeout(endFinaleAndStartLetter, FINALE_DURATION);
 
                 }, 4000); 
@@ -855,7 +836,6 @@
             if(floatInterval) clearInterval(floatInterval); 
             if(finaleTimerInterval) clearInterval(finaleTimerInterval); 
             
-            // Ẩn Timer
             finaleTimer.style.opacity = 0;
             setTimeout(() => finaleTimer.style.display = 'none', 1000);
 
@@ -872,13 +852,11 @@
             }, 5000); 
         }
 
-        // --- LETTER LOGIC ---
         function showLetterSequence() {
             appState = 'LETTER';
             letterContainer.style.display = 'flex'; 
             letterControls.style.opacity = 1;
             
-            // Reset trạng thái sách
             theBook.classList.remove('open');
             currentLetterPage = 0;
             
@@ -887,25 +865,14 @@
             btnResetGame.style.display = 'none';
         }
 
-        // --- HÀM TẠO TIM BAY ---
         function spawnHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart-particle');
             heart.innerHTML = Math.random() < 0.5 ? '❤️' : '💗';
-            
-            // Vị trí ngẫu nhiên chiều ngang
             heart.style.left = (Math.random() * 90) + '%';
-            
-            // Random góc xoay cho tự nhiên
             heart.style.setProperty('--rotation', (Math.random() * 60 - 30) + 'deg');
-            
-            // Thêm vào DOM
             letterPageRight.appendChild(heart);
-
-            // Xóa sau khi bay xong
-            setTimeout(() => {
-                if (heart.parentNode) heart.remove();
-            }, 3500);
+            setTimeout(() => { if (heart.parentNode) heart.remove(); }, 3500);
         }
 
         btnOpenLetter.addEventListener('click', () => {
@@ -921,7 +888,6 @@
             btnNextMsg.style.display = 'inline-block';
             btnCloseLetter.style.display = 'none';
 
-            // BẮT ĐẦU TIM BAY
             if (heartInterval) clearInterval(heartInterval);
             spawnHeart(); 
             heartInterval = setInterval(spawnHeart, 800); 
@@ -935,7 +901,6 @@
                     letterText.innerText = LETTER_MESSAGES[currentLetterPage];
                     letterText.style.opacity = 1;
                 }
-                
                 if (currentLetterPage >= 2) { 
                     btnNextMsg.style.display = 'none';
                     btnCloseLetter.style.display = 'inline-block';
@@ -945,8 +910,6 @@
 
         btnCloseLetter.addEventListener('click', () => {
             theBook.classList.remove('open'); 
-            
-            // DỪNG TIM BAY
             if (heartInterval) clearInterval(heartInterval);
             const existingHearts = document.querySelectorAll('.heart-particle');
             existingHearts.forEach(h => h.remove());
@@ -967,7 +930,6 @@
             if (isResetting) return;
             isResetting = true; 
             
-            // DỪNG TIM BAY KHI RESET
             if (heartInterval) clearInterval(heartInterval);
             const existingHearts = document.querySelectorAll('.heart-particle');
             existingHearts.forEach(h => h.remove());
@@ -1014,8 +976,6 @@
 
         function spawnFloatingItem() {
             if(appState !== 'FINALE') return;
-
-            // --- LOGIC XỬ LÝ ẢNH KHÔNG TRÙNG LẶP ---
             if (shuffledImages.length === 0) {
                 let indices = Array.from({length: FLOATING_IMAGES.length}, (_, i) => i);
                 for (let i = indices.length - 1; i > 0; i--) {
@@ -1024,7 +984,6 @@
                 }
                 shuffledImages = indices;
             }
-
             const uniqueIndex = shuffledImages.pop();
 
             const layoutType = Math.random() > 0.5 ? 0 : 1; 
@@ -1032,19 +991,20 @@
             msgEl.innerText = MESSAGES[floatIndex % MESSAGES.length];
             const imgEl = document.createElement('div'); imgEl.classList.add('float-item', 'img-box');
             const img = document.createElement('img');
-            
             img.src = FLOATING_IMAGES[uniqueIndex]; 
             imgEl.appendChild(img);
             
-            // --- LOGIC VỊ TRÍ MỚI (Thích ứng Mobile) ---
+            // XỬ LÝ VỊ TRÍ THÔNG MINH (MOBILE vs DESKTOP)
+            const isPortrait = window.innerHeight > window.innerWidth;
             const isMobile = window.innerWidth < 768;
             
-            // Mobile: Dãn rộng ra mép hơn để tránh overlap ở giữa
-            // PC: Giữ nguyên khoảng cách cũ
-            const leftMin = isMobile ? 2 : 5;
-            const leftMax = isMobile ? 40 : 35;
-            const rightMin = isMobile ? 52 : 55;
-            const rightMax = isMobile ? 46 : 35;
+            // Nếu là điện thoại dọc thì dãn biên độ ra
+            let leftMin = 5, leftMax = 35, rightMin = 55, rightMax = 35;
+
+            if (isMobile && isPortrait) {
+                leftMin = 2; leftMax = 40;
+                rightMin = 52; rightMax = 46;
+            }
 
             const randomLeft = leftMin + Math.random() * leftMax; 
             const randomRight = rightMin + Math.random() * rightMax;
@@ -1059,7 +1019,6 @@
             
             floatContainer.appendChild(msgEl); floatContainer.appendChild(imgEl);
             floatIndex++;
-            
             setTimeout(() => { if(msgEl.parentNode) msgEl.remove(); }, 15000);
             setTimeout(() => { if(imgEl.parentNode) imgEl.remove(); }, 15000);
         }

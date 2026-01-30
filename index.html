@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy New Year 2026 - Special for Ngoc Linh</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
@@ -16,6 +16,8 @@
         body {
             margin: 0; padding: 0; background-color: #000; overflow: hidden;
             font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
+            /* Ngăn chặn zoom trên mobile */
+            touch-action: none;
         }
 
         /* --- BACKGROUND LAYERS --- */
@@ -40,6 +42,7 @@
             color: #fff; background: linear-gradient(45deg, #ff0055, #ff00aa);
             border: 2px solid #fff; border-radius: 50px; cursor: pointer;
             box-shadow: 0 0 30px #ff00aa; transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
         }
         #start-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px #ff00aa; }
         
@@ -58,7 +61,7 @@
         
         .fade-out-transition { opacity: 0 !important; transition: opacity 1.5s ease-out; }
 
-        #greeting-box { display: none; margin-bottom: 20px; animation: fadeIn 1s ease-out; transition: opacity 1s; }
+        #greeting-box { display: none; margin-bottom: 20px; animation: fadeIn 1s ease-out; transition: opacity 1s; width: 100%; }
         .greet-line1 {
             font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #fff;
             text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff00aa; margin-bottom: 10px;
@@ -83,7 +86,7 @@
         #guide-text {
             position: absolute; bottom: 15%; font-family: 'Nunito', sans-serif; font-weight: 700;
             font-size: 1.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 0 10px #000;
-            width: 100%; text-align: center; transition: opacity 1s;
+            width: 100%; text-align: center; transition: opacity 1s; padding: 0 10px; box-sizing: border-box;
         }
 
         /* Timer cho phần Finale */
@@ -181,7 +184,6 @@
             text-shadow: 0 0 10px #ff0000;
             background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 50px;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            /* Đảm bảo chữ luôn căn giữa */
             text-align: center;
             width: fit-content;
             margin: 0 auto;
@@ -266,6 +268,61 @@
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
             10% { opacity: 0.8; transform: translateY(-20px) scale(1); }
             100% { transform: translateY(-350px) scale(1.2) rotate(var(--rotation)); opacity: 0; }
+        }
+
+        /* ----------------------------------------------------- */
+        /* --- RESPONSIVE MOBILE (PHẦN THÊM MỚI QUAN TRỌNG) --- */
+        /* ----------------------------------------------------- */
+        @media screen and (max-width: 768px) {
+            
+            /* 1. Màn hình chờ & Chữ chào */
+            #start-btn { font-size: 1.2rem; padding: 15px 30px; width: 80%; }
+            .greet-line1 { font-size: 2rem; }
+            .greet-line2 { font-size: 2.5rem; letter-spacing: 1px; }
+            #countdown-number { font-size: 8rem; margin-top: 10px; }
+            #guide-text { font-size: 1rem; bottom: 12%; }
+
+            /* 2. Vật thể bay (Tin nhắn & Ảnh) - Thu nhỏ để không đè nhau */
+            .msg-box {
+                width: 42vw; /* Chiếm khoảng 42% màn hình */
+                padding: 10px; font-size: 0.9rem;
+                border-radius: 10px;
+                white-space: normal; /* Cho phép xuống dòng */
+            }
+            .img-box {
+                width: 40vw; /* Chiếm khoảng 40% màn hình */
+                min-height: auto;
+                padding: 4px;
+            }
+            /* Đảm bảo chúng không bao giờ rộng hơn 50% màn hình để xếp được 2 cột */
+            .float-item { max-width: 48%; }
+
+            /* 3. Quyển sách 3D - Tự động co theo chiều ngang */
+            .book-wrapper {
+                width: 92vw; /* Gần như full màn hình */
+                height: 65vw; /* Chiều cao tự tính theo tỷ lệ */
+            }
+            .cover-front::after { font-size: 1.8rem; padding: 10px 20px; }
+            
+            .text-content {
+                font-size: 0.95rem; line-height: 1.4;
+                min-height: 120px; margin-bottom: 10px;
+                width: 100%;
+            }
+            .page-right, .page-left { padding: 10px; border-width: 4px; }
+            .page-left img { border-width: 2px; }
+
+            /* 4. Điều khiển & Camera */
+            #letter-controls { bottom: 5%; width: 100%; align-items: center; }
+            #btn-open-letter { font-size: 1.2rem; padding: 12px 40px; }
+            .ctrl-btn { font-size: 0.9rem; padding: 8px 20px; }
+            
+            #camera-box {
+                width: 100px; height: 75px; 
+                bottom: 10px; right: 10px;
+                opacity: 0.4; /* Mờ hơn để không che nội dung */
+            }
+            #finale-timer { font-size: 1.2rem; bottom: 80px; }
         }
 
     </style>
@@ -959,12 +1016,8 @@
             if(appState !== 'FINALE') return;
 
             // --- LOGIC XỬ LÝ ẢNH KHÔNG TRÙNG LẶP ---
-            // Nếu danh sách rỗng (lần đầu chạy hoặc đã hiện hết 50 ảnh), thì nạp lại và xáo trộn
             if (shuffledImages.length === 0) {
-                // 1. Tạo danh sách index từ 0 đến độ dài mảng ảnh
                 let indices = Array.from({length: FLOATING_IMAGES.length}, (_, i) => i);
-                
-                // 2. Thuật toán Fisher-Yates Shuffle để xáo trộn ngẫu nhiên
                 for (let i = indices.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [indices[i], indices[j]] = [indices[j], indices[i]];
@@ -972,9 +1025,7 @@
                 shuffledImages = indices;
             }
 
-            // Lấy một index từ danh sách đã xáo trộn (cắt bớt mảng đi 1 phần tử)
             const uniqueIndex = shuffledImages.pop();
-            // ---------------------------------------
 
             const layoutType = Math.random() > 0.5 ? 0 : 1; 
             const msgEl = document.createElement('div'); msgEl.classList.add('float-item', 'msg-box');
@@ -982,16 +1033,29 @@
             const imgEl = document.createElement('div'); imgEl.classList.add('float-item', 'img-box');
             const img = document.createElement('img');
             
-            // Gán ảnh theo index không trùng lặp vừa lấy được
             img.src = FLOATING_IMAGES[uniqueIndex]; 
-            
             imgEl.appendChild(img);
             
-            const randomLeft = 5 + Math.random() * 35; 
-            const randomRight = 55 + Math.random() * 35;
+            // --- LOGIC VỊ TRÍ MỚI (Thích ứng Mobile) ---
+            const isMobile = window.innerWidth < 768;
             
-            if (layoutType === 0) { msgEl.style.left = randomLeft + '%'; imgEl.style.left = randomRight + '%'; } 
-            else { msgEl.style.left = randomRight + '%'; imgEl.style.left = randomLeft + '%'; }
+            // Mobile: Dãn rộng ra mép hơn để tránh overlap ở giữa
+            // PC: Giữ nguyên khoảng cách cũ
+            const leftMin = isMobile ? 2 : 5;
+            const leftMax = isMobile ? 40 : 35;
+            const rightMin = isMobile ? 52 : 55;
+            const rightMax = isMobile ? 46 : 35;
+
+            const randomLeft = leftMin + Math.random() * leftMax; 
+            const randomRight = rightMin + Math.random() * rightMax;
+            
+            if (layoutType === 0) { 
+                msgEl.style.left = randomLeft + '%'; 
+                imgEl.style.left = randomRight + '%'; 
+            } else { 
+                msgEl.style.left = randomRight + '%'; 
+                imgEl.style.left = randomLeft + '%'; 
+            }
             
             floatContainer.appendChild(msgEl); floatContainer.appendChild(imgEl);
             floatIndex++;

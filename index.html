@@ -132,7 +132,7 @@
         .input_video { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
         #camera-overlay { position: absolute; top:0; left:0; width:100%; height:100%; }
 
-        /* --- 3D LETTER STYLES (ĐÃ SỬA LỖI HIỂN THỊ) --- */
+        /* --- 3D LETTER STYLES --- */
         #letter-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
             display: none; justify-content: center; align-items: center;
@@ -163,13 +163,13 @@
             background-color: #fff;
         }
 
-        /* Bìa Trước */
+        /* Bìa Trước - Căn chỉnh chính xác chữ For My Love */
         .cover-front {
             left: 50%; z-index: 20;
             background: url('res/image/love1.png') center/cover no-repeat;
             background-color: #ffb6c1; 
             border-radius: 0 15px 15px 0;
-            position: absolute; /* Đảm bảo position */
+            position: absolute; 
             transform: rotateY(0deg); 
             border: 8px double #ff69b4; border-left: none; box-sizing: border-box;
             display: flex; justify-content: center; align-items: center;
@@ -181,9 +181,13 @@
             text-shadow: 0 0 10px #ff0000;
             background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 50px;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            /* Đảm bảo chữ luôn căn giữa */
+            text-align: center;
+            width: fit-content;
+            margin: 0 auto;
         }
 
-        /* Trang Phải (Nội dung) - Đã sửa lỗi */
+        /* Trang Phải (Nội dung) */
         .page-right {
             right: 0; z-index: 10; background: #fff;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -194,7 +198,7 @@
             position: absolute;
         }
 
-        /* Trang Trái (Ảnh) - Đã sửa lỗi */
+        /* Trang Trái (Ảnh) */
         .page-left {
             left: 0; z-index: 10; background: #fff5ee;
             border-radius: 15px 0 0 15px;
@@ -376,40 +380,73 @@
         }
 
         // --- DỮ LIỆU ---
+        
+        // 50 Lời chúc mới dành riêng cho Linh
         const MESSAGES = [
-            "🌸 Happy New Year 2026 Ngọc Linh! 🌸", "Chúc bạn yêu một năm rực rỡ sắc màu! ✨",
-            "Mãi xinh đẹp, rạng ngời như thế nhé! 💃", "Cảm ơn vì đã ở bên tôi! ❤️",
-            "Năm mới thắng lợi mới nhé bạn tôi ơi! 🏆", "Luôn mỉm cười thật tươi nhé! 😊",
-            "Yêu Linh nhiều thật nhiều! 💖", "Chúc Linh vạn sự như ý - Tỷ sự như mơ 🌟",
-            "Sức khỏe dồi dào, bình an hạnh phúc 🍀", "Năm 2026 thật bùng nổ và thành công! 🎆",
-            "Mãi là cô gái tuyệt vời nhất quả đất! 👑", "Tiền vào như nước, đếm mỏi tay luôn 💰",
-            "Tình duyên phơi phới, hạnh phúc ngập tràn 💕", "Luôn tỏa sáng như một vì sao nhé ⭐️",
-            "Chúc mừng năm mới người thương! 🥂", "Mong mọi điều tốt đẹp nhất đến với Linh 🌸",
-            "Cùng nhau đón thêm nhiều cái Tết nữa nhé! 🤝", "Năm mới bớt lo âu, thêm niềm vui 😄",
-            "Chúc Linh đi đâu cũng gặp may mắn 🍀", "Sự nghiệp thăng tiến vù vù như diều gặp gió 🚀",
-            "Happy New Year my love! 💋", "Chúc Linh ăn nhiều món ngon mà không béo 🍕",
-            "Luôn giữ vững đam mê cháy bỏng nhé! 🔥", "Năm mới rạng rỡ như ánh mặt trời ☀️",
-            "Chúc Linh đạt được mọi ước mơ 🌈", "Luôn bình yên và ấm áp bên gia đình 🏠",
-            "Một năm 2026 thật đáng nhớ nhé! 📸", "Gửi ngàn nụ hôn nồng thắm đến Linh 😘",
-            "Chúc Linh mỗi ngày đều là một ngày vui 😁", "Mãi bên nhau bạn nhé! 💞",
-            "Chúc Linh xinh đẹp bất chấp thời gian 🌹", "Chúc mừng năm mới 2026 rực rỡ!!! 🎉"
+            "🌸 Happy New Year 2026 Linh xinh đẹp! 🌸",
+            "Năm mới chúc Linh mãi rạng ngời như ánh ban mai ☀️",
+            "Linh ơi, năm nay phải thật hạnh phúc nhé! ❤️",
+            "Chúc Linh tiền về đầy túi, tình đầy tim 💰",
+            "Luôn giữ nụ cười tỏa nắng ấy nhé Linh 😊",
+            "Năm 2026 bùng nổ nhan sắc nha cô gái! 💃",
+            "Chúc Linh vạn sự như ý, tỉ sự như mơ 🌟",
+            "Mỗi ngày của Linh đều là một ngày vui 🎉",
+            "Cảm ơn vì Linh đã luôn ở bên tớ 💕",
+            "Năm mới bớt lo âu, thêm thật nhiều niềm vui 😄",
+            "Linh là cô gái tuyệt vời nhất tớ từng gặp 🌹",
+            "Chúc Linh sự nghiệp thăng tiến vù vù 🚀",
+            "Đi đâu cũng gặp may mắn nha Linh ơi 🍀",
+            "Chúc Linh ăn mãi không béo, luôn xinh tươi 🍕",
+            "Năm mới, thành công mới rực rỡ nhé Linh! 🏆",
+            "Mãi là bông hoa xinh đẹp nhất nhé 🌺",
+            "Chúc Linh tìm được hạnh phúc trọn vẹn 💖",
+            "Linh ơi, mạnh mẽ và kiên cường lên nhé 💪",
+            "Năm nay hứa hẹn nhiều điều tuyệt vời với Linh ✨",
+            "Chúc Linh luôn được yêu thương và che chở ☂️",
+            "Sức khỏe dồi dào để đi khắp thế giới 🌏",
+            "Năm mới bình an, tâm hồn thư thái nhé Linh 🍃",
+            "Chúc Linh luôn tự tin và tỏa sáng 💎",
+            "Mong mọi ước mơ của Linh thành hiện thực 🌈",
+            "Năm 2026 rực rỡ sắc màu nhé Linh! 🎨",
+            "Lúc nào mệt mỏi, nhớ là có tớ ở đây 🤝",
+            "Chúc Linh xinh đẹp bất chấp thời gian ⏳",
+            "Tình duyên phơi phới nhé cô nàng xinh đẹp 💕",
+            "Linh cười lên là thế giới bừng sáng đấy 😁",
+            "Chúc mừng năm mới người bạn đặc biệt! 🥂",
+            "Năm nay nhất định phải giàu to nhé Linh 💸",
+            "Hạnh phúc ngập tràn, yêu thương lai láng 🥰",
+            "Chúc Linh một năm đáng nhớ nhất thanh xuân 📸",
+            "Luôn giữ vững đam mê cháy bỏng nhé 🔥",
+            "Năm mới, khởi đầu mới thật thuận lợi 🍀",
+            "Chúc Linh gặp được người trân trọng mình ❤️",
+            "Mỗi sáng thức dậy đều là niềm vui mới ☀️",
+            "Linh xứng đáng với những điều tốt đẹp nhất 🎁",
+            "Năm mới sang chảnh, thần thái ngút ngàn 👑",
+            "Chúc Linh luôn yêu đời, yêu người 💗",
+            "Mọi khó khăn sẽ qua, chỉ còn niềm vui ở lại 🌈",
+            "Linh là điều ngọt ngào của năm mới 🍬",
+            "Chúc Linh công việc hanh thông, thuận lợi 📈",
+            "Năm nay đi du lịch thật nhiều nhé Linh ✈️",
+            "Mãi bên nhau bạn nhé! 💞",
+            "Chúc Linh ngủ ngon, mơ đẹp mỗi tối 🌙",
+            "Năm mới chúc Linh luôn an nhiên tự tại 🌼",
+            "Gửi ngàn nụ hôn gió tới Linh 😘",
+            "Yêu thương Linh rất nhiều! 💖",
+            "Happy New Year 2026 - Năm của Linh! 🎆"
         ];
 
-        // Mảng ảnh tổng hợp (để preload)
-        const IMAGES = [
-            "res/image/love1.png", "res/image/love2.jpg",
-            "res/image/IMG_5966.JPG", "res/image/IMG_5977.JPG", "res/image/IMG_5940.JPG", "res/image/IMG_5970.JPG",
-            "res/image/IMG_5942.JPG", "res/image/IMG_5968.JPG", "res/image/IMG_5971.JPG", "res/image/IMG_5943.JPG",
-            "res/image/IMG_5969.JPG", "res/image/IMG_5939.JPG", "res/image/IMG_5938.JPG", "res/image/IMG_5974.JPG",
-            "res/image/IMG_5976.JPG", "res/image/IMG_5973.JPG", "res/image/IMG_5941.JPG", "res/image/IMG_5960.JPG",
-            "res/image/IMG_5975.JPG", "res/image/IMG_5946.JPG", "res/image/IMG_5948.JPG", "res/image/IMG_5949.JPG",
-            "res/image/IMG_5947.JPG", "res/image/IMG_5957.JPG", "res/image/IMG_5956.JPG", "res/image/IMG_5944.JPG",
-            "res/image/IMG_5945.JPG", "res/image/IMG_5861.JPG", "res/image/IMG_5862.JPG", "res/image/IMG_5852.JPG",
-            "res/image/IMG_5851.JPG", "res/image/IMG_5951.JPG", "res/image/IMG_5954.JPG", "res/image/IMG_5952.JPG"
-        ];
+        // Tạo mảng ảnh động từ NL1.JPG đến NL50.JPG
+        const BASE_IMAGES = ["res/image/love1.png", "res/image/love2.jpg", "res/image/back.png"];
+        const NL_IMAGES = [];
+        for (let i = 1; i <= 50; i++) {
+            NL_IMAGES.push(`res/image/NL${i}.JPG`);
+        }
         
-        // Lọc ảnh trôi (Không bao gồm ảnh thiệp love1, love2)
-        const FLOATING_IMAGES = IMAGES.filter(img => !img.includes('love1') && !img.includes('love2'));
+        // Mảng tổng hợp để preload
+        const IMAGES = [...BASE_IMAGES, ...NL_IMAGES];
+
+        // Ảnh trôi chỉ lấy từ bộ ảnh mới (NL1...NL50)
+        const FLOATING_IMAGES = NL_IMAGES;
 
         // Nội dung thư
         const LETTER_MESSAGES = [
@@ -456,6 +493,7 @@
         let floatIndex = 0;
         let finaleOngoing = false;
         let isResetting = false;
+        let shuffledImages = []; // Biến lưu danh sách ảnh đã xáo trộn
         
         let screenFlash = 0; 
         let flashColor = '255, 105, 180';
@@ -592,9 +630,10 @@
 
         // --- PRELOAD LOGIC ---
         let imagesLoaded = 0;
-        const totalImages = IMAGES.length;
+        let totalImages = 0; // Sẽ cập nhật sau khi mảng IMAGES đầy đủ
 
         function preloadAllImages() {
+            totalImages = IMAGES.length;
             return new Promise((resolve) => {
                 if (totalImages === 0) resolve();
                 IMAGES.forEach((src) => {
@@ -919,14 +958,32 @@
         function spawnFloatingItem() {
             if(appState !== 'FINALE') return;
 
+            // --- LOGIC XỬ LÝ ẢNH KHÔNG TRÙNG LẶP ---
+            // Nếu danh sách rỗng (lần đầu chạy hoặc đã hiện hết 50 ảnh), thì nạp lại và xáo trộn
+            if (shuffledImages.length === 0) {
+                // 1. Tạo danh sách index từ 0 đến độ dài mảng ảnh
+                let indices = Array.from({length: FLOATING_IMAGES.length}, (_, i) => i);
+                
+                // 2. Thuật toán Fisher-Yates Shuffle để xáo trộn ngẫu nhiên
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+                shuffledImages = indices;
+            }
+
+            // Lấy một index từ danh sách đã xáo trộn (cắt bớt mảng đi 1 phần tử)
+            const uniqueIndex = shuffledImages.pop();
+            // ---------------------------------------
+
             const layoutType = Math.random() > 0.5 ? 0 : 1; 
             const msgEl = document.createElement('div'); msgEl.classList.add('float-item', 'msg-box');
             msgEl.innerText = MESSAGES[floatIndex % MESSAGES.length];
             const imgEl = document.createElement('div'); imgEl.classList.add('float-item', 'img-box');
             const img = document.createElement('img');
             
-            const randomImgIndex = Math.floor(Math.random() * FLOATING_IMAGES.length);
-            img.src = FLOATING_IMAGES[randomImgIndex]; 
+            // Gán ảnh theo index không trùng lặp vừa lấy được
+            img.src = FLOATING_IMAGES[uniqueIndex]; 
             
             imgEl.appendChild(img);
             

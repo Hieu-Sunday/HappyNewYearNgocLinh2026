@@ -1,0 +1,295 @@
+/* Import Font chữ đẹp */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@700&family=Orbitron:wght@900&family=Great+Vibes&family=Nunito:wght@400;700&display=swap');
+
+body {
+    margin: 0; padding: 0; background-color: #000; overflow: hidden;
+    font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
+    overscroll-behavior: none; 
+}
+
+/* --- BACKGROUND LAYERS --- */
+#bg-image-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
+    transition: opacity 2s ease-in-out; background: #000;
+}
+#bg-image-layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+#canvas-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background-color: #000;
+}
+
+/* --- LANDING SCREEN & UI --- */
+#landing-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
+    display: flex; justify-content: center; align-items: center;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); transition: opacity 0.5s;
+}
+#start-btn {
+    padding: 20px 50px; font-size: 2rem; font-family: 'Nunito', sans-serif; font-weight: 700;
+    color: #fff; background: linear-gradient(45deg, #ff0055, #ff00aa);
+    border: 2px solid #fff; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 0 30px #ff00aa; transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center; max-width: 90%;
+}
+#start-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px #ff00aa; }
+
+#loading {
+    position: absolute; top: 60%; left: 50%; transform: translateX(-50%);
+    font-family: 'Nunito', sans-serif; color: #fff; font-size: 1.2rem; display: none; z-index: 101;
+    text-align: center; width: 100%;
+}
+
+#ui-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 60;
+    pointer-events: none; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    transition: opacity 0.5s;
+}
+
+.fade-out-transition { opacity: 0 !important; transition: opacity 1.5s ease-out; }
+
+#greeting-box { display: none; margin-bottom: 20px; animation: fadeIn 1s ease-out; transition: opacity 1s; }
+.greet-line1 {
+    font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #fff;
+    text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff00aa; margin-bottom: 10px;
+}
+.greet-line2 {
+    font-family: 'Cinzel', serif; font-size: 4rem; font-weight: bold; color: #ffd700;
+    text-transform: uppercase; text-shadow: 0 0 15px #ffd700, 0 0 30px #ff4500; letter-spacing: 3px;
+}
+
+#countdown-number {
+    font-family: 'Orbitron', sans-serif; font-size: 15rem; line-height: 1;
+    background: linear-gradient(to bottom, #ffffff 0%, #ffd700 50%, #ff8c00 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.8));
+    display: none; margin-top: 20px;
+    transition: opacity 1s;
+}
+.pop-anim { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+#guide-text {
+    position: absolute; bottom: 15%; font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 1.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 0 10px #000;
+    width: 100%; text-align: center; transition: opacity 1s; padding: 0 10px;
+}
+
+#finale-timer {
+    position: absolute; bottom: 30px; left: 0; width: 100%;
+    text-align: center; z-index: 150; pointer-events: none;
+    font-family: 'Dancing Script', cursive; font-size: 2rem; color: #fff;
+    text-shadow: 0 0 10px #ff1493, 0 0 20px #ff00aa;
+    display: none; opacity: 0; transition: opacity 1s;
+}
+
+/* --- FLOATING ITEMS --- */
+#floating-container {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 40;
+    overflow: hidden; pointer-events: none; display: none; 
+    transition: opacity 2s ease;
+}
+.float-item { 
+    position: absolute; top: 100%; will-change: transform; 
+    animation: floatUp 15s linear forwards; 
+}
+@keyframes floatUp { 
+    0% { transform: translateY(0); opacity: 0; } 
+    5% { opacity: 1; } 90% { opacity: 1; } 
+    100% { transform: translateY(-150vh); opacity: 0; } 
+}
+
+/* Z-INDEX: 100 để tin nhắn luôn nổi trên ảnh */
+.msg-box {
+    z-index: 100; 
+    background: rgba(20, 0, 10, 0.85); border: 2px solid #ff69b4;
+    border-radius: 20px; padding: 20px 30px; 
+    width: auto; max-width: 300px;
+    text-align: center;
+    color: #fff; font-family: 'Dancing Script', cursive; font-size: 1.8rem;
+    box-shadow: 0 0 25px rgba(255, 20, 147, 0.8); white-space: pre-wrap;
+}
+
+/* Z-INDEX: 45 để ảnh chìm dưới tin nhắn */
+.img-box {
+    z-index: 45; padding: 8px; background: #ff1493; border-radius: 15px;
+    box-shadow: 0 0 25px rgba(255, 20, 147, 0.5); 
+    width: 250px; /* Ảnh dọc */
+    min-height: 150px; 
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* ẢNH NGANG: To hơn */
+.img-box.landscape {
+    width: 600px !important;
+    max-width: 80vw;
+}
+
+.img-box img { width: 100%; display: block; border-radius: 10px; }
+
+/* --- CAMERA & OVERLAY --- */
+#camera-box {
+    position: absolute; bottom: 20px; right: 20px; width: 160px; height: 120px;
+    z-index: 90; border: 2px solid #ff00aa; border-radius: 10px; overflow: hidden;
+    background: #000; transform: scaleX(-1); display: none; opacity: 0.7;
+}
+.input_video { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
+#camera-overlay { position: absolute; top:0; left:0; width:100%; height:100%; }
+
+/* --- 3D LETTER STYLES --- */
+#letter-container {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
+    display: none; justify-content: center; align-items: center;
+    perspective: 1500px; pointer-events: none; 
+}
+
+.book-wrapper {
+    position: relative; 
+    width: 750px; height: 500px; 
+    max-width: 95vw; max-height: 80vh; 
+    transform-style: preserve-3d; 
+    transition: transform 1s ease-in-out, width 0.5s, height 0.5s;
+    animation: cardFloatUp 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    pointer-events: auto; 
+    flex-shrink: 0; margin: auto;
+}
+@keyframes cardFloatUp { from { transform: translateY(100vh); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+@keyframes glowPulse {
+    from { box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); }
+    to { box-shadow: 0 0 40px rgba(255, 20, 147, 1), 0 0 60px rgba(255, 105, 180, 0.8); }
+}
+
+.book-page {
+    position: absolute; top: 0; bottom: 0; width: 50%; height: 100%;
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s;
+    transform-origin: left center; backface-visibility: hidden;
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+    animation: glowPulse 2s infinite alternate;
+    background-color: #fff;
+}
+
+.cover-front {
+    left: 50%; z-index: 20;
+    background: url('../res/image/love1.png') center/cover no-repeat;
+    background-color: #ffb6c1; 
+    border-radius: 0 15px 15px 0;
+    position: absolute; 
+    transform: rotateY(0deg); 
+    border: 8px double #ff69b4; border-left: none; box-sizing: border-box;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.cover-front::after {
+    content: "For My Love"; 
+    font-family: 'Great Vibes', cursive; font-size: 4rem; color: #fff; 
+    text-shadow: 0 0 10px #ff0000;
+    background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 50px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    text-align: center; width: fit-content; margin: 0 auto;
+}
+
+.page-right {
+    right: 0; z-index: 10; background: #fff;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 30px; box-sizing: border-box; text-align: center;
+    font-family: 'Nunito', sans-serif; color: #d63384;
+    border: 8px double #ff69b4; border-left: none; border-radius: 0 15px 15px 0;
+    overflow: hidden;
+    position: absolute;
+}
+
+.page-left {
+    left: 0; z-index: 10; background: #fff5ee;
+    border-radius: 15px 0 0 15px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 15px; box-sizing: border-box;
+    border: 8px double #ff69b4; border-right: none;
+    opacity: 0; transform: rotateY(0deg); position: absolute;
+}
+.page-left img {
+    width: 85%; height: 42%; object-fit: cover; margin: 10px 0;
+    border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transform: rotate(-3deg);
+}
+.page-left img:last-child { transform: rotate(3deg); }
+
+.book-wrapper.open .cover-front { transform: rotateY(-180deg); opacity: 0; pointer-events: none; }
+.book-wrapper.open .page-left { opacity: 1; }
+
+.text-content {
+    font-size: 1.4rem; line-height: 1.6; font-weight: 600;
+    margin-bottom: 25px; min-height: 180px; width: 90%;
+    display: flex; align-items: center; justify-content: center;
+    text-shadow: 0 0 1px rgba(214, 51, 132, 0.1);
+    position: relative; z-index: 2; overflow-y: auto;
+}
+
+.ctrl-btn {
+    margin-top: 15px; padding: 10px 25px; border: none; background: #ff1493; color: white;
+    font-family: 'Nunito', sans-serif; font-weight: bold; border-radius: 25px; cursor: pointer;
+    box-shadow: 0 3px 10px rgba(255,20,147,0.4); transition: 0.2s; font-size: 1.1rem;
+    position: relative; z-index: 100;
+}
+.ctrl-btn:hover { background: #ff007f; transform: scale(1.05); }
+.reset-btn { background: #444; margin-top: 15px; font-size: 1rem; }
+.reset-btn:hover { background: #666; }
+
+#letter-controls {
+    position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; gap: 10px; opacity: 0; transition: opacity 0.5s; 
+    pointer-events: auto; z-index: 210;
+}
+#btn-open-letter {
+     padding: 18px 50px; font-size: 1.8rem; background: #ff0055; color: white; border: none; border-radius: 50px;
+     box-shadow: 0 0 25px #ff0055; cursor: pointer; animation: pulse 2s infinite; white-space: nowrap;
+}
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+.heart-particle {
+    position: absolute; bottom: 0; font-size: 24px; color: #ff0055;
+    user-select: none; pointer-events: none; z-index: 1; 
+    animation: heartFly 3s linear forwards; opacity: 0;
+}
+
+@keyframes heartFly {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    10% { opacity: 0.8; transform: translateY(-20px) scale(1); }
+    100% { transform: translateY(-350px) scale(1.2) rotate(var(--rotation)); opacity: 0; }
+}
+
+/* ==========================================================================
+   TÙY CHỈNH CHO ĐIỆN THOẠI (LANDSCAPE MODE)
+   ========================================================================== */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    #start-btn { font-size: 1rem; padding: 10px 25px; }
+
+    .greet-line1 { font-size: 10vh; margin-bottom: 2px; }
+    .greet-line2 { font-size: 12vh; letter-spacing: 1px; }
+    #countdown-number { font-size: 35vh; margin-top: 5px; }
+    #guide-text { font-size: 5vh; bottom: 5%; }
+    #finale-timer { font-size: 6vh; bottom: 10px; }
+    #camera-box { width: 120px; height: 90px; bottom: 5px; right: 5px; border-width: 1px; }
+
+    .msg-box { 
+        width: 25vw; padding: 5px; font-size: 3vh; border-radius: 8px; border-width: 1px;
+    }
+    .img-box { 
+        width: 20vw; min-height: auto; padding: 3px; border-radius: 6px; 
+    }
+    .img-box.landscape {
+        width: 45vw !important; /* Mobile thì cho to vừa phải */
+    }
+    .float-item { animation-duration: 10s; }
+
+    .book-wrapper { height: 75vh; width: 112.5vh; max-width: 85vw; }
+    .cover-front::after { font-size: 10vh; padding: 1vh 2vh; }
+    .page-right { padding: 10px; }
+    .text-content { font-size: 4.5vh; min-height: auto; margin-bottom: 1vh; line-height: 1.3; }
+    .ctrl-btn { padding: 1vh 3vh; font-size: 4vh; margin-top: 5px; }
+    #btn-open-letter { font-size: 5vh; padding: 1.5vh 4vh; }
+    #letter-controls { bottom: 5%; }
+    .page-left { padding: 5px; }
+    .page-left img { height: 40%; margin: 2px 0; border-width: 2px; }
+}

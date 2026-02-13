@@ -192,8 +192,16 @@ body {
 
 .page-right {
     right: 0; z-index: 10; background: #fff;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 30px; box-sizing: border-box; text-align: center;
+    display: flex; flex-direction: column; 
+    
+    /* QUAN TRỌNG 1: Đổi từ center -> flex-start để nội dung luôn bắt đầu từ trên xuống */
+    justify-content: flex-start; 
+    align-items: center;
+    
+    padding: 30px; 
+    padding-top: 50px; /* Thêm khoảng cách trên đầu để chữ không sát mép */
+    
+    box-sizing: border-box; text-align: center;
     font-family: 'Nunito', sans-serif; color: #d63384;
     border: 8px double #ff69b4; border-left: none; border-radius: 0 15px 15px 0;
     overflow: hidden;
@@ -219,12 +227,33 @@ body {
 .book-wrapper.open .page-left { opacity: 1; }
 
 .text-content {
-    font-size: 1.4rem; line-height: 1.6; font-weight: 600;
-    margin-bottom: 25px; min-height: 180px; width: 90%;
-    display: flex; align-items: center; justify-content: center;
+    font-size: 1.35rem; line-height: 1.6; font-weight: 600;
+    width: 95%; /* Mở rộng chiều ngang một chút */
+    
+    /* QUAN TRỌNG 2: Xóa display: flex cũ, chuyển sang block để hỗ trợ cuộn tốt hơn */
+    display: block; 
+    
+    /* QUAN TRỌNG 3: Thiết lập chiều cao cố định để kích hoạt thanh cuộn */
+    height: 340px; 
+    overflow-y: auto; /* Cho phép cuộn dọc */
+    
+    /* Căn chỉnh văn bản */
+    text-align: left; /* Căn trái cho dễ đọc (hoặc dùng justify nếu thích) */
+    padding-right: 10px; /* Chừa chỗ cho thanh cuộn không che chữ */
+    
+    margin-bottom: 15px; 
     text-shadow: 0 0 1px rgba(214, 51, 132, 0.1);
-    position: relative; z-index: 2; overflow-y: auto;
+    position: relative; z-index: 2;
+    
+    /* Làm đẹp thanh cuộn (Chrome/Safari/Edge) */
+    scrollbar-width: thin;
+    scrollbar-color: #ff69b4 #fff;
 }
+
+/* Thêm hiệu ứng thanh cuộn (Webkit) */
+.text-content::-webkit-scrollbar { width: 6px; }
+.text-content::-webkit-scrollbar-track { background: #fff0f5; }
+.text-content::-webkit-scrollbar-thumb { background-color: #ff69b4; border-radius: 10px; }
 
 .ctrl-btn {
     margin-top: 15px; padding: 10px 25px; border: none; background: #ff1493; color: white;

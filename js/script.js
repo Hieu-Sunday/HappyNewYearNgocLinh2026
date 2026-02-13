@@ -1,5 +1,5 @@
 // --- CẤU HÌNH ---
-const FINALE_DURATION = 100000; 
+const FINALE_DURATION = 110000; 
 
 // --- ÂM THANH SYSTEM ---
 const AUDIO = {
@@ -117,9 +117,39 @@ const IMAGES = [...BASE_IMAGES, ...NL_IMAGES];
 const FLOATING_IMAGES = NL_IMAGES;
 
 const LETTER_MESSAGES = [
-    "Gửi Ngọc Linh,\nNăm mới đã đến rồi, anh muốn gửi đến em những lời chúc tốt đẹp nhất. Cảm ơn em vì đã xuất hiện và làm cuộc sống của anh trở nên rực rỡ hơn bao giờ hết. 🌹",
-    "Năm 2026 này, anh mong em sẽ luôn cười thật tươi, đạt được mọi ước mơ mà em ấp ủ. Dù có chuyện gì xảy ra, hãy nhớ rằng luôn có anh ở phía sau ủng hộ em hết mình. 💪❤️",
-    "Yêu em rất nhiều! Chúc mừng năm mới, cô gái tuyệt vời nhất của anh. Hãy cùng nhau tạo nên thật nhiều kỷ niệm đẹp nữa nhé! 💑✨"
+    "Hi Linh,\nNăm mới sắp đến rồi, và hôm nay lại còn là Valentine nữa. Có lẽ đây là một dịp rất đặc biệt để mình viết cho bạn những dòng cảm xúc này – với tất cả sự chân thành trong lòng ☺️🥹😘.",
+    
+    "Thật ra, để nói được những lời này hôm nay, mình đã phải nghĩ lại rất nhiều về những ngày đầu chúng ta quen nhau – về khoảnh khắc mình bắt đầu chú ý đến bạn từ khi nào 😳.",
+    
+    "Ờm nên bắt đầu từ đâu nhỉ? Có lẽ là từ lần đầu gặp bạn ở lớp Thiết kế số. Khi đó mình đã để ý đến bạn, vì bạn hay được thầy An hỏi bài các thứ. Mình thấy bạn thường ngồi cạnh và nói chuyện khá thân với một bạn nam – sau này mình mới biết đó là Bảo. Khi ấy mình còn nghĩ hai người là người yêu nên thỉnh thoảng cũng tò mò xem hai bạn nói chuyện gì với nhau 😃. Nghĩ lại thấy mình cũng buồn cười thật 😆.",
+    
+    "Rồi đến hôm gặp bạn ở phòng thực hành – lần đầu tiên mình nói chuyện với bạn. Nếu lúc đó mình có hơi “chảnh” thì mong bạn thông cảm 😅, vì lâu rồi mình không nói chuyện với con gái nên hơi ngượng một chút. Khi ấy mình chỉ nghĩ đơn giản là bạn bè nói chuyện trên lớp thôi nên cũng không để ý nhiều.",
+    
+    "Nhưng rồi về nhà, mình nhận ra bạn thường là người chủ động nhắn tin trước để mở đầu câu chuyện. Chính từ những tin nhắn ấy, mình đã bắt đầu có chút rung động 😚. Mình cũng đã hỏi dò xem bạn có người yêu chưa, nhưng thật ra lúc đó mình chưa nghĩ đến chuyện sẽ tìm hiểu bạn một cách nghiêm túc 🫠.",
+    
+    "Phải đến khi nghe bạn nói về việc bạn phải đi mổ, nghe bạn chia sẻ về những khó khăn trong quá khứ, về hoàn cảnh gia đình… và đặc biệt là qua những buổi nói chuyện trực tiếp với bạn ở công viên, mình mới thực sự cảm nhận được tình cảm của mình rõ ràng hơn. Bạn kể chuyện rất chân thành, và dù là chuyện vui hay buồn, bạn vẫn luôn nở một nụ cười trên môi. Chính điều đó khiến mình thấy bạn thật đặc biệt 😳.",
+    
+    "Càng về sau này, mình càng được trò chuyện với bạn nhiều hơn, hiểu sâu hơn về tính cách và con người của bạn. Mình nhận ra bạn là một người rất nhiệt huyết, lạc quan và thật lòng. Mình cảm nhận được bạn coi mình như một người thân trong nhà, và điều đó khiến mình trân trọng vô cùng 😊.",
+    
+    "Rồi đến một ngày được nghe bạn kể về những mối quan hệ cũ, hay nhắc đến một bạn trai khác, mặc dù những lần trước thì không sao, nhưng lần này mình lại thấy trong lòng có chút khó chịu và hụt hẫng khó tả 😞. Có lẽ đó là cảm giác ghen😳. Hay những lúc bạn giận mình, mình luôn cảm thấy phải xin lỗi và tìm mọi cách để níu lại mối quan hệ này. Mình sợ bạn buồn, sợ bạn giận và không chơi với mình nữa 😥. Những cảm giác ấy thật sự khiến mình cảm thấy tồi tệ, không thể tập trung vào việc gì cả...",
+    
+    "Và rồi mình nhận ra: có lẽ mình đã \"thích\" bạn từ lúc nào mà chính mình cũng không hay 🥺.",
+    
+    "Cho đến tận bây giờ, mình rất thích bạn 😳. Không chỉ vì bạn xinh, mà vì cách bạn cười – rất tự nhiên và ấm áp. Vì sự chân thành và lạc quan của bạn trong từng câu nói. Vì cảm giác được ở bên bạn, cùng học, cùng chia sẻ, cùng theo đuổi ước mơ của riêng mình 😊.",
+    
+    "Đó là tất cả những cảm xúc thật lòng mà mình muốn chia sẻ với bạn. Vì vậy, Valentine này – cũng là dịp năm mới đang đến – mình muốn nói với bạn rằng:",
+    
+    "Mình thật sự thích cậu, Linh à!❤️",
+    
+    "Mình không mong bạn phải trả lời ngay, cũng không muốn bạn cảm thấy áp lực. Mình chỉ hy vọng rằng, nếu có thể, chúng ta thử cho nhau một cơ hội nhỏ – bước thêm một bước từ bạn thân trở thành một mối quan hệ đặc biệt hơn 😳.",
+    
+    "Nếu bạn chưa sẵn sàng, mình vẫn luôn trân trọng bạn và tình bạn này ☺️. Lá thư này chỉ là cầu nối để bạn hiểu rõ hơn về những gì mình đang cảm nhận, và để mình không phải giấu tình cảm đó nữa.",
+    
+    "Dù câu trả lời của bạn là gì, mình vẫn cảm ơn bạn vì đã xuất hiện trong cuộc sống của mình, làm cho những ngày bình thường trở nên ý nghĩa hơn.",
+    
+    "Chúc Linh một mùa Valentine ấm áp và một năm mới thật nhiều niềm vui, bình an 🎉🍀☺️.",
+    
+    "Thương bạn – theo một cách chân thành nhất,\nHiếu ❤️"
 ];
 
 // --- GLOBAL VARIABLES & SELECTORS ---
@@ -521,13 +551,25 @@ btnOpenLetter.addEventListener('click', () => {
 
 btnNextMsg.addEventListener('click', () => {
     currentLetterPage++;
+    
+    // Tạo hiệu ứng mờ dần
     letterText.style.opacity = 0;
+
     setTimeout(() => {
+        // Cập nhật nội dung
         if (currentLetterPage < LETTER_MESSAGES.length) {
             letterText.innerText = LETTER_MESSAGES[currentLetterPage];
+            
+            // --- DÒNG QUAN TRỌNG MỚI THÊM ---
+            // Đưa thanh cuộn về vị trí đầu tiên ngay lập tức
+            letterText.scrollTop = 0; 
+            // --------------------------------
+            
             letterText.style.opacity = 1;
         }
-        if (currentLetterPage >= 2) { 
+
+        // Kiểm tra trang cuối
+        if (currentLetterPage >= LETTER_MESSAGES.length - 1) { 
             btnNextMsg.style.display = 'none';
             btnCloseLetter.style.display = 'inline-block';
         }

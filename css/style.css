@@ -321,4 +321,23 @@ body {
     #letter-controls { bottom: 5%; }
     .page-left { padding: 5px; }
     .page-left img { height: 40%; margin: 2px 0; border-width: 2px; }
+
+    .page-right { 
+        padding: 10px; 
+        padding-top: 20px; /* Đẩy nội dung xuống xíu */
+        justify-content: flex-start; /* Bắt buộc bắt đầu từ trên */
+    }
+
+    .text-content { 
+        font-size: 4vh; 
+        
+        /* QUAN TRỌNG: Chiều cao cố định trên mobile để cuộn được */
+        height: 55vh; 
+        
+        min-height: auto; 
+        margin-bottom: 5px; 
+        line-height: 1.4; 
+    }
+    
+    .ctrl-btn { padding: 1vh 3vh; font-size: 4vh; margin-top: 5px; }
 }

@@ -100,7 +100,6 @@ body {
     100% { transform: translateY(-150vh); opacity: 0; } 
 }
 
-/* Z-INDEX: 100 để tin nhắn luôn nổi trên ảnh */
 .msg-box {
     z-index: 100; 
     background: rgba(20, 0, 10, 0.85); border: 2px solid #ff69b4;
@@ -111,16 +110,14 @@ body {
     box-shadow: 0 0 25px rgba(255, 20, 147, 0.8); white-space: pre-wrap;
 }
 
-/* Z-INDEX: 45 để ảnh chìm dưới tin nhắn */
 .img-box {
     z-index: 45; padding: 8px; background: #ff1493; border-radius: 15px;
     box-shadow: 0 0 25px rgba(255, 20, 147, 0.5); 
-    width: 250px; /* Ảnh dọc */
+    width: 250px; 
     min-height: 150px; 
     display: flex; justify-content: center; align-items: center;
 }
 
-/* ẢNH NGANG: To hơn */
 .img-box.landscape {
     width: 600px !important;
     max-width: 80vw;
@@ -133,6 +130,8 @@ body {
     position: absolute; bottom: 20px; right: 20px; width: 160px; height: 120px;
     z-index: 90; border: 2px solid #ff00aa; border-radius: 10px; overflow: hidden;
     background: #000; transform: scaleX(-1); display: none; opacity: 0.7;
+    /* Hiệu ứng chuyển cảnh mượt mà cho opacity */
+    transition: opacity 1.5s ease-in-out; 
 }
 .input_video { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
 #camera-overlay { position: absolute; top:0; left:0; width:100%; height:100%; }
@@ -193,14 +192,10 @@ body {
 .page-right {
     right: 0; z-index: 10; background: #fff;
     display: flex; flex-direction: column; 
-    
-    /* QUAN TRỌNG 1: Đổi từ center -> flex-start để nội dung luôn bắt đầu từ trên xuống */
     justify-content: flex-start; 
     align-items: center;
-    
     padding: 30px; 
-    padding-top: 50px; /* Thêm khoảng cách trên đầu để chữ không sát mép */
-    
+    padding-top: 50px;
     box-sizing: border-box; text-align: center;
     font-family: 'Nunito', sans-serif; color: #d63384;
     border: 8px double #ff69b4; border-left: none; border-radius: 0 15px 15px 0;
@@ -228,29 +223,19 @@ body {
 
 .text-content {
     font-size: 1.35rem; line-height: 1.6; font-weight: 600;
-    width: 95%; /* Mở rộng chiều ngang một chút */
-    
-    /* QUAN TRỌNG 2: Xóa display: flex cũ, chuyển sang block để hỗ trợ cuộn tốt hơn */
+    width: 95%; 
     display: block; 
-    
-    /* QUAN TRỌNG 3: Thiết lập chiều cao cố định để kích hoạt thanh cuộn */
     height: 340px; 
-    overflow-y: auto; /* Cho phép cuộn dọc */
-    
-    /* Căn chỉnh văn bản */
-    text-align: left; /* Căn trái cho dễ đọc (hoặc dùng justify nếu thích) */
-    padding-right: 10px; /* Chừa chỗ cho thanh cuộn không che chữ */
-    
+    overflow-y: auto; 
+    text-align: left; 
+    padding-right: 10px; 
     margin-bottom: 15px; 
     text-shadow: 0 0 1px rgba(214, 51, 132, 0.1);
     position: relative; z-index: 2;
-    
-    /* Làm đẹp thanh cuộn (Chrome/Safari/Edge) */
     scrollbar-width: thin;
     scrollbar-color: #ff69b4 #fff;
 }
 
-/* Thêm hiệu ứng thanh cuộn (Webkit) */
 .text-content::-webkit-scrollbar { width: 6px; }
 .text-content::-webkit-scrollbar-track { background: #fff0f5; }
 .text-content::-webkit-scrollbar-thumb { background-color: #ff69b4; border-radius: 10px; }
@@ -301,43 +286,18 @@ body {
     #finale-timer { font-size: 6vh; bottom: 10px; }
     #camera-box { width: 120px; height: 90px; bottom: 5px; right: 5px; border-width: 1px; }
 
-    .msg-box { 
-        width: 25vw; padding: 5px; font-size: 3vh; border-radius: 8px; border-width: 1px;
-    }
-    .img-box { 
-        width: 20vw; min-height: auto; padding: 3px; border-radius: 6px; 
-    }
-    .img-box.landscape {
-        width: 45vw !important; /* Mobile thì cho to vừa phải */
-    }
+    .msg-box { width: 25vw; padding: 5px; font-size: 3vh; border-radius: 8px; border-width: 1px; }
+    .img-box { width: 20vw; min-height: auto; padding: 3px; border-radius: 6px; }
+    .img-box.landscape { width: 45vw !important; }
     .float-item { animation-duration: 10s; }
 
     .book-wrapper { height: 75vh; width: 112.5vh; max-width: 85vw; }
     .cover-front::after { font-size: 10vh; padding: 1vh 2vh; }
-    .page-right { padding: 10px; }
-    .text-content { font-size: 4.5vh; min-height: auto; margin-bottom: 1vh; line-height: 1.3; }
+    .page-right { padding: 10px; padding-top: 20px; justify-content: flex-start; }
+    .text-content { font-size: 4vh; height: 55vh; min-height: auto; margin-bottom: 5px; line-height: 1.4; }
     .ctrl-btn { padding: 1vh 3vh; font-size: 4vh; margin-top: 5px; }
     #btn-open-letter { font-size: 5vh; padding: 1.5vh 4vh; }
     #letter-controls { bottom: 5%; }
     .page-left { padding: 5px; }
     .page-left img { height: 40%; margin: 2px 0; border-width: 2px; }
-
-    .page-right { 
-        padding: 10px; 
-        padding-top: 20px; /* Đẩy nội dung xuống xíu */
-        justify-content: flex-start; /* Bắt buộc bắt đầu từ trên */
-    }
-
-    .text-content { 
-        font-size: 4vh; 
-        
-        /* QUAN TRỌNG: Chiều cao cố định trên mobile để cuộn được */
-        height: 55vh; 
-        
-        min-height: auto; 
-        margin-bottom: 5px; 
-        line-height: 1.4; 
-    }
-    
-    .ctrl-btn { padding: 1vh 3vh; font-size: 4vh; margin-top: 5px; }
 }

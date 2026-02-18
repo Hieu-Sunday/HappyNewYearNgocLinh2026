@@ -190,9 +190,9 @@ let floatIndex = 0;
 let finaleOngoing = false;
 let isResetting = false;
 let shuffledImages = [];
+let cameraRef = null; 
 
 // --- TẠO TÚI CHỨA VỊ TRÍ ĐỂ PHÂN PHỐI ĐỀU ---
-// 0: Trái (5-25%), 1: Giữa (30-50%), 2: Phải (55-70%)
 let imgZones = []; 
 let msgZones = []; 
 
@@ -224,8 +224,15 @@ for(let i=0; i<150; i++) stars.push(new Star());
 class Firework {
     constructor(startX, startY, targetY, type = 'normal') {
         this.x = startX; this.y = startY; this.targetY = targetY; this.type = type;
-        if (type === 'big-opener') { this.speed = 4.5; } else { this.speed = Math.random() * 4 + 10; }
+        
+        if (type === 'big-opener') { 
+            this.speed = 3.2; 
+        } else { 
+            this.speed = Math.random() * 2 + 3; // Tốc độ 3-5 (Vừa vặn)
+        }
+        
         this.particles = []; this.exploded = false;
+        
         if(type === 'big-opener') {
             this.hue = 340; 
             AUDIO.whistle.currentTime = 0; AUDIO.whistle.play().catch(e => console.log(e));
@@ -236,9 +243,16 @@ class Firework {
     update() {
         if(!this.exploded) {
             this.y -= this.speed; 
-            if (this.type === 'big-opener') { this.speed *= 0.998; } else { this.speed *= 0.95; }
+            
+            if (this.type === 'big-opener') { 
+                this.speed *= 0.998; 
+            } else { 
+                this.speed *= 0.995; // Giữ đà bay lên cao
+            }
+            
             if(this.type === 'big-opener') { ctx.fillStyle = 'rgba(255,100,150,0.8)'; ctx.beginPath(); ctx.arc(this.x, this.y + 10, 3, 0, Math.PI*2); ctx.fill(); }
-            if(this.y <= this.targetY || this.speed <= 1) this.explode();
+            
+            if(this.y <= this.targetY || this.speed <= 0.5) this.explode();
         } else {
             this.particles.forEach((p,i) => { p.update(); if(p.alpha <= 0) this.particles.splice(i,1); });
         }
@@ -250,23 +264,38 @@ class Firework {
             const flashColors = [ '255, 20, 147', '255, 0, 0', '148, 0, 211', '255, 105, 180' ];
             flashColor = flashColors[Math.floor(Math.random() * flashColors.length)];
         }
+        
         if (this.type === 'big-opener') {
             AUDIO.boom.currentTime = 0; AUDIO.boom.play().catch(e => console.log(e));
-            const particleCount = 600;
+            
+            const particleCount = 1500; 
             for(let i=0; i < particleCount; i++) {
                 const t = (Math.PI * 2 * i) / particleCount;
                 const dx = 16 * Math.pow(Math.sin(t), 3);
                 const dy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                
                 const hue = 320 + Math.random() * 40; 
                 const p = new Particle(this.x, this.y, hue, 0); 
-                const scale = 0.9 + Math.random() * 0.2; 
-                p.vx = dx * scale; p.vy = (dy - 5) * scale;
-                p.gravity = 0.05; p.friction = 0.96; p.decay = 0.005; p.sparkle = true;  
+                
+                const scale = 1.0 + Math.random() * 0.4; 
+                p.vx = dx * scale; 
+                p.vy = (dy - 5) * scale;
+                
+                p.gravity = 0.03; 
+                p.friction = 0.95; 
+                p.decay = Math.random() * 0.001 + 0.001; 
+                p.sparkle = true;  
+                p.isHeart = true; 
+                
                 this.particles.push(p);
             }
         } else {
             let count = (this.type === 'finale-round') ? 300 : 40; 
-            let spread = (this.type === 'finale-round') ? 15 : 5;
+            
+            // --- SỬA ĐỔI Ở ĐÂY: TĂNG ĐỘ LOE (SPREAD) ---
+            // Cũ: 4 -> Mới: 9 (Sẽ bung rộng gấp đôi, bao phủ màn hình tốt hơn)
+            let spread = (this.type === 'finale-round') ? 9 : 3;
+            
             for(let i=0; i<count; i++) this.particles.push(new Particle(this.x, this.y, this.hue, spread));
         }
     }
@@ -281,8 +310,14 @@ class Particle {
         this.x = x; this.y = y;
         const angle = Math.random() * Math.PI * 2; const speed = Math.random() * spreadSpeed + 1; 
         this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
-        this.alpha = 1; this.friction = 0.96; this.gravity = 0.04;
-        this.decay = Math.random() * 0.008 + 0.004; this.hue = hue; this.sparkle = Math.random() < 0.5; 
+        this.alpha = 1; 
+        
+        this.friction = 0.95; 
+        this.gravity = 0.015; // Giữ trọng lực siêu nhẹ để lơ lửng
+        
+        this.decay = Math.random() * 0.005 + 0.003; 
+
+        this.hue = hue; this.sparkle = Math.random() < 0.5; 
     }
     update() {
         this.vx *= this.friction; this.vy *= this.friction;
@@ -290,9 +325,30 @@ class Particle {
     }
     draw() {
         ctx.save(); ctx.globalCompositeOperation = 'lighter';
-        let currentAlpha = this.alpha; if(this.sparkle) currentAlpha *= (0.5 + Math.random() * 0.5); 
+        let currentAlpha = this.alpha; 
+        if(this.sparkle) {
+            currentAlpha *= (0.4 + Math.random() * 0.6); 
+        }
+        
         ctx.fillStyle = `hsla(${this.hue}, 100%, 60%, ${currentAlpha})`;
-        ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill(); ctx.restore();
+
+        if (this.isHeart) {
+            const size = 2.0; 
+            ctx.translate(this.x, this.y);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-size, -size, -size*2, -size/2, -size*2, 0);
+            ctx.bezierCurveTo(-size*2, size, 0, size*2, 0, size*2);
+            ctx.bezierCurveTo(0, size*2, size*2, size, size*2, 0);
+            ctx.bezierCurveTo(size*2, -size/2, size, -size, 0, 0);
+            ctx.fill();
+        } else {
+            ctx.beginPath(); 
+            ctx.arc(this.x, this.y, 2, 0, Math.PI*2); 
+            ctx.fill(); 
+        }
+        
+        ctx.restore();
     }
 }
 
@@ -311,11 +367,11 @@ function animateCanvas() {
         fireworks.push(new Firework(Math.random() * canvas.width, canvas.height, Math.random() * (canvas.height * 0.5), 'normal'));
     }
     
-    if(finaleOngoing && Math.random() < 0.08) { 
+    if(finaleOngoing && Math.random() < 0.03) { 
         fireworks.push(new Firework(
             Math.random() * canvas.width, 
             canvas.height, 
-            canvas.height * 0.05 + Math.random() * (canvas.height * 0.5), 
+            canvas.height * 0.1 + Math.random() * (canvas.height * 0.5), 
             'finale-round'
         ));
     }
@@ -359,18 +415,28 @@ startBtn.addEventListener('click', async () => {
     
     loadingText.style.display = 'none'; 
     cameraBox.style.display = 'block';
+    cameraBox.style.opacity = '0.7'; 
+
     appState = 'WAITING'; 
     guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
 });
 
 async function initCamera() {
-    const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-    hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
-    hands.onResults(onResults);
-    const camera = new Camera(videoElement, {
-        onFrame: async () => { await hands.send({image: videoElement}); }, width: 640, height: 480
-    });
-    await camera.start();
+    if (!cameraRef) {
+        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+        hands.onResults(onResults);
+        
+        cameraRef = new Camera(videoElement, {
+            onFrame: async () => { 
+                if (videoElement.srcObject && videoElement.srcObject.active) {
+                    await hands.send({image: videoElement}); 
+                }
+            }, 
+            width: 640, height: 480
+        });
+    }
+    await cameraRef.start();
 }
 
 function countFingers(landmarks) {
@@ -386,6 +452,8 @@ function countFingers(landmarks) {
 
 function onResults(results) {
     overlayCtx.clearRect(0,0,overlayCanvas.width, overlayCanvas.height);
+    if(appState === 'FINALE' || appState === 'LETTER') return;
+
     if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const lm = results.multiHandLandmarks[0];
         drawConnectors(overlayCtx, lm, HAND_CONNECTIONS, {color: '#00ff00', lineWidth: 2});
@@ -436,6 +504,17 @@ function startFinaleSequence() {
     
     fadeOutAudio(AUDIO.bgIntro);
     
+    cameraBox.style.opacity = 0;
+    setTimeout(() => {
+        cameraBox.style.display = 'none';
+        if(videoElement.srcObject) {
+            const stream = videoElement.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            videoElement.srcObject = null;
+        }
+    }, 1500);
+
     greetingBox.classList.add('fade-out-transition');
     countDisplay.classList.add('fade-out-transition');
     guideText.classList.add('fade-out-transition');
@@ -552,23 +631,15 @@ btnOpenLetter.addEventListener('click', () => {
 btnNextMsg.addEventListener('click', () => {
     currentLetterPage++;
     
-    // Tạo hiệu ứng mờ dần
     letterText.style.opacity = 0;
 
     setTimeout(() => {
-        // Cập nhật nội dung
         if (currentLetterPage < LETTER_MESSAGES.length) {
             letterText.innerText = LETTER_MESSAGES[currentLetterPage];
-            
-            // --- DÒNG QUAN TRỌNG MỚI THÊM ---
-            // Đưa thanh cuộn về vị trí đầu tiên ngay lập tức
             letterText.scrollTop = 0; 
-            // --------------------------------
-            
             letterText.style.opacity = 1;
         }
 
-        // Kiểm tra trang cuối
         if (currentLetterPage >= LETTER_MESSAGES.length - 1) { 
             btnNextMsg.style.display = 'none';
             btnCloseLetter.style.display = 'inline-block';
@@ -634,6 +705,15 @@ function resetGame() {
         guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
         guideText.style.bottom = '15%';
 
+        cameraBox.style.display = 'block';
+        cameraBox.style.opacity = 0;
+        
+        initCamera().then(() => {
+            setTimeout(() => {
+                cameraBox.style.opacity = 0.7;
+            }, 500); 
+        });
+
         AUDIO.bgIntro.currentTime = 0;
         AUDIO.bgIntro.volume = 0.4; 
         AUDIO.bgIntro.play().catch(e => console.log("User interaction needed"));
@@ -642,12 +722,9 @@ function resetGame() {
     }, 1000);
 }
 
-// HÀM HỖ TRỢ: LẤY KHU VỰC TIẾP THEO TRONG TÚI
 function getNextZone(bag) {
     if (bag.length === 0) {
-        // Nạp đầy túi: 0, 1, 2
         bag.push(0, 1, 2);
-        // Trộn túi (Fisher-Yates shuffle đơn giản)
         for (let i = bag.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [bag[i], bag[j]] = [bag[j], bag[i]];
@@ -656,7 +733,6 @@ function getNextZone(bag) {
     return bag.pop();
 }
 
-// HÀM MỚI: PHÂN PHỐI ĐỀU 3 KHU VỰC TRÁI - GIỮA - PHẢI
 function spawnFloatingItem() {
     if(appState !== 'FINALE') return;
 
@@ -671,7 +747,6 @@ function spawnFloatingItem() {
 
     const uniqueIndex = shuffledImages.pop();
     
-    // --- PHẦN 1: XỬ LÝ ẢNH (DÙNG TÚI imgZones) ---
     const imgEl = document.createElement('div'); 
     imgEl.classList.add('float-item', 'img-box');
     const img = document.createElement('img');
@@ -682,22 +757,18 @@ function spawnFloatingItem() {
         imgEl.classList.add('landscape');
     }
     
-    // Lấy khu vực từ túi
     const zoneImg = getNextZone(imgZones);
     let leftMin, leftMax;
     
-    // Chia màn hình làm 3 phần, đảm bảo ảnh luôn có chỗ đứng và không bị tràn
-    if (zoneImg === 0) { leftMin = 2; leftMax = 25; }      // Trái
-    else if (zoneImg === 1) { leftMin = 30; leftMax = 50; } // Giữa
-    else { leftMin = 55; leftMax = 70; }                    // Phải (giới hạn 70 để không tràn)
+    if (zoneImg === 0) { leftMin = 2; leftMax = 25; }      
+    else if (zoneImg === 1) { leftMin = 30; leftMax = 50; } 
+    else { leftMin = 55; leftMax = 70; }                    
 
     const randomLeftImg = leftMin + Math.random() * (leftMax - leftMin);
     imgEl.style.left = randomLeftImg + '%';
     
     floatContainer.appendChild(imgEl);
     
-    // --- PHẦN 2: XỬ LÝ TIN NHẮN (DÙNG TÚI msgZones RIÊNG) ---
-    // Dùng túi riêng để tin nhắn và ảnh không bị dính chùm vào cùng 1 khu vực
     const msgEl = document.createElement('div'); 
     msgEl.classList.add('float-item', 'msg-box');
     msgEl.innerText = MESSAGES[floatIndex % MESSAGES.length];

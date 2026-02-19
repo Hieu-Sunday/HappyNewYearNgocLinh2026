@@ -3,8 +3,14 @@
 
 body {
     margin: 0; padding: 0; background-color: #000; overflow: hidden;
-    font-family: 'Nunito', sans-serif; height: 100vh; width: 100vw; user-select: none;
-    overscroll-behavior: none; 
+    font-family: 'Nunito', sans-serif;
+    width: 100vw; 
+    height: 100vh; /* Fallback cho trình duyệt cũ */
+    height: 100dvh; /* QUAN TRỌNG: Fix lỗi thanh địa chỉ mobile */
+    user-select: none;
+    -webkit-user-select: none; /* Cho Safari */
+    overscroll-behavior: none;
+    touch-action: none; /* Ngăn chặn zoom/scroll không mong muốn */
 }
 
 /* --- BACKGROUND LAYERS --- */
@@ -274,30 +280,70 @@ body {
 }
 
 /* ==========================================================================
-   TÙY CHỈNH CHO ĐIỆN THOẠI (LANDSCAPE MODE)
+   MOBILE OPTIMIZATION (Thay thế toàn bộ phần Mobile ở cuối file style.css)
    ========================================================================== */
+
+/* --- CHUNG CHO MOBILE --- */
+@media screen and (max-width: 1024px) {
+    /* Tăng kích thước nút bấm để dễ chạm */
+    #start-btn { padding: 15px 40px; font-size: 1.2rem; width: 80%; }
+    .ctrl-btn { padding: 12px 30px; font-size: 1.1rem; min-height: 44px; }
+    #btn-open-letter { font-size: 1.5rem; padding: 15px 40px; }
+    
+    /* QUAN TRỌNG: Đã XÓA dòng ẩn camera-overlay để hiện lại xương tay */
+    
+    /* Chỉnh font đếm ngược nhỏ lại chút cho vừa màn hình */
+    #countdown-number { font-size: 20vh; }
+}
+
+/* --- CHẾ ĐỘ DỌC (PORTRAIT) --- */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    /* Camera lên góc trên */
+    #camera-box { 
+        top: 60px; right: 10px; bottom: auto; 
+        width: 100px; height: 75px; 
+        opacity: 0.8 !important; /* Hiện rõ hơn */
+    }
+
+    .greet-line1 { font-size: 3rem; margin-top: -20%; }
+    .greet-line2 { font-size: 3.5rem; }
+    #guide-text { bottom: 20%; font-size: 1.2rem; width: 90%; left: 5%; }
+
+    /* Quyển sách thu nhỏ cho vừa chiều dọc */
+    .book-wrapper {
+        width: 90vw; 
+        height: 55vh; 
+    }
+
+    .page-right { padding: 15px; padding-top: 20px; }
+    .text-content {
+        font-size: 1rem; line-height: 1.4; height: 60%;
+    }
+    .page-left img { height: 35%; margin: 5px 0; }
+    
+    .img-box { width: 45vw; }
+    .msg-box { max-width: 80vw; font-size: 1.2rem; }
+}
+
+/* --- CHẾ ĐỘ NGANG (LANDSCAPE) --- */
 @media screen and (max-height: 600px) and (orientation: landscape) {
-    #start-btn { font-size: 1rem; padding: 10px 25px; }
+    #start-btn { font-size: 1rem; padding: 8px 20px; }
+    .greet-line1 { font-size: 2.5rem; margin-bottom: 0; }
+    .greet-line2 { font-size: 3rem; }
+    #countdown-number { font-size: 40vh; margin-top: 0; }
+    
+    #camera-box { width: 100px; height: 75px; bottom: 5px; right: 5px; }
 
-    .greet-line1 { font-size: 10vh; margin-bottom: 2px; }
-    .greet-line2 { font-size: 12vh; letter-spacing: 1px; }
-    #countdown-number { font-size: 35vh; margin-top: 5px; }
-    #guide-text { font-size: 5vh; bottom: 5%; }
-    #finale-timer { font-size: 6vh; bottom: 10px; }
-    #camera-box { width: 120px; height: 90px; bottom: 5px; right: 5px; border-width: 1px; }
+    .book-wrapper { height: 85vh; width: 130vh; max-width: 90vw; }
+    .text-content { font-size: 1rem; height: 60%; }
+    .img-box { width: 25vw; }
+    .msg-box { max-width: 40vw; font-size: 1rem; }
+}
 
-    .msg-box { width: 25vw; padding: 5px; font-size: 3vh; border-radius: 8px; border-width: 1px; }
-    .img-box { width: 20vw; min-height: auto; padding: 3px; border-radius: 6px; }
-    .img-box.landscape { width: 45vw !important; }
-    .float-item { animation-duration: 10s; }
-
-    .book-wrapper { height: 75vh; width: 112.5vh; max-width: 85vw; }
-    .cover-front::after { font-size: 10vh; padding: 1vh 2vh; }
-    .page-right { padding: 10px; padding-top: 20px; justify-content: flex-start; }
-    .text-content { font-size: 4vh; height: 55vh; min-height: auto; margin-bottom: 5px; line-height: 1.4; }
-    .ctrl-btn { padding: 1vh 3vh; font-size: 4vh; margin-top: 5px; }
-    #btn-open-letter { font-size: 5vh; padding: 1.5vh 4vh; }
-    #letter-controls { bottom: 5%; }
-    .page-left { padding: 5px; }
-    .page-left img { height: 40%; margin: 2px 0; border-width: 2px; }
+/* --- Style riêng cho nút Chơi Lại --- */
+.restart-style {
+    background: #ff4757 !important; /* Màu đỏ nổi bật */
+    color: white !important;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
 }

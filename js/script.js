@@ -206,7 +206,16 @@ function resize() {
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     overlayCanvas.width = 160; overlayCanvas.height = 120;
 }
-window.addEventListener('resize', resize);
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    // Debounce: Chỉ resize khi người dùng dừng thay đổi kích thước
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        canvas.width = window.innerWidth; 
+        canvas.height = window.innerHeight;
+        // Không set lại overlayCanvas để tránh lỗi tỉ lệ
+    }, 100);
+});
 resize();
 
 // --- CLASS HIỆU ỨNG ---
@@ -403,28 +412,55 @@ function preloadAllImages() {
     });
 }
 
+/* --- Thay thế đoạn startBtn.addEventListener cũ --- */
 startBtn.addEventListener('click', async () => {
-    AUDIO.bgIntro.play().catch(e => console.log("Cần tương tác người dùng để phát nhạc"));
+    // Mở khóa âm thanh cho Mobile
+    Object.values(AUDIO).forEach(s => {
+        if(s !== AUDIO.bgIntro) {
+            s.muted = true; 
+            s.play().then(() => { s.pause(); s.currentTime=0; s.muted=false; }).catch(()=>{});
+        }
+    });
+
+    AUDIO.bgIntro.play().catch(e => console.log("Cần tương tác"));
+    
     landingScreen.style.opacity = 0; 
     setTimeout(() => landingScreen.style.display = 'none', 500);
     
     loadingText.style.display = 'block';
     loadingText.innerText = "Đang khởi động Camera & Tải ảnh...";
 
-    await Promise.all([initCamera(), preloadAllImages()]);
-    
-    loadingText.style.display = 'none'; 
-    cameraBox.style.display = 'block';
-    cameraBox.style.opacity = '0.7'; 
+    try {
+        await Promise.all([initCamera(), preloadAllImages()]);
+        
+        loadingText.style.display = 'none'; 
+        cameraBox.style.display = 'block';
+        // Mobile thì để camera mờ hơn chút cho dễ nhìn chữ, PC thì rõ hơn
+        cameraBox.style.opacity = (window.innerWidth < 768) ? '0.6' : '0.8'; 
 
-    appState = 'WAITING'; 
-    guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
+        appState = 'WAITING'; 
+        guideText.innerText = "Giơ 5 ngón tay để bắt đầu...";
+    } catch (err) {
+        alert("Lỗi Camera: " + err.message);
+    }
 });
 
 async function initCamera() {
     if (!cameraRef) {
         const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+        
+        // Kiểm tra thiết bị
+        const isMobile = window.innerWidth < 768;
+
+        hands.setOptions({ 
+            maxNumHands: 1, 
+            // TỐI ƯU: Mobile dùng 0 (Lite) để nhanh, PC dùng 1 (Full) để chính xác
+            // Vẫn hiển thị khung xương tay bình thường
+            modelComplexity: isMobile ? 0 : 1, 
+            minDetectionConfidence: 0.5, 
+            minTrackingConfidence: 0.5 
+        });
+        
         hands.onResults(onResults);
         
         cameraRef = new Camera(videoElement, {
@@ -433,7 +469,9 @@ async function initCamera() {
                     await hands.send({image: videoElement}); 
                 }
             }, 
-            width: 640, height: 480
+            // Giảm độ phân giải video input trên mobile để tăng FPS
+            width: isMobile ? 480 : 1280, 
+            height: isMobile ? 360 : 720
         });
     }
     await cameraRef.start();
@@ -451,20 +489,42 @@ function countFingers(landmarks) {
 }
 
 function onResults(results) {
-    overlayCtx.clearRect(0,0,overlayCanvas.width, overlayCanvas.height);
-    if(appState === 'FINALE' || appState === 'LETTER') return;
+    // Lưu trạng thái canvas
+    overlayCtx.save();
+    
+    // Xóa khung hình cũ
+    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
+    // --- DÒNG QUAN TRỌNG NHẤT ĐỂ KHẮC PHỤC MÀN HÌNH ĐEN ---
+    // Vẽ hình ảnh từ video camera thật làm phông nền lên canvas
+    overlayCtx.drawImage(results.image, 0, 0, overlayCanvas.width, overlayCanvas.height);
+    // ------------------------------------------------------
+
+    // Nếu đang mở thiệp hoặc màn hình pháo hoa thì dừng không vẽ tay nữa
+    if(appState === 'FINALE' || appState === 'LETTER') {
+        overlayCtx.restore();
+        return;
+    }
+
+    // Vẽ xương tay và xử lý logic đếm ngược đè lên trên nền camera
     if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const lm = results.multiHandLandmarks[0];
+        
+        // Vẽ xương tay (màu xanh lá / đỏ)
         drawConnectors(overlayCtx, lm, HAND_CONNECTIONS, {color: '#00ff00', lineWidth: 2});
         drawLandmarks(overlayCtx, lm, {color: '#ff0000', lineWidth: 1});
+        
+        // Logic đếm ngón tay của bạn (Giữ nguyên)
         const fingers = countFingers(lm);
         processGameLogic(fingers);
     } else {
+        // Nếu đang đếm ngược mà rụt tay lại thì reset
         if(appState === 'COUNTDOWN') {
             if (!isResetting) resetGame();
         }
     }
+    
+    overlayCtx.restore();
 }
 
 function processGameLogic(fingers) {

@@ -22,10 +22,11 @@
     <div id="bg-image-layer">
         <img src="res/image/back.png" alt="Background" onerror="this.style.display='none'">
     </div>
+    
     <canvas id="canvas-bg"></canvas>
 
     <div id="camera-box">
-        <video class="input_video" playsinline></video>
+        <video class="input_video" playsinline webkit-playsinline muted autoplay style="display: none; transform: scale(-1, 1); width: 100%; height: 100%; object-fit: cover;"></video>
         <canvas id="camera-overlay"></canvas>
     </div>
 
@@ -60,11 +61,13 @@
         </div>
         
         <div id="letter-controls">
-            <button id="btn-open-letter">Mở Thiệp 💌</button>
-            <button class="ctrl-btn reset-btn" id="btn-reset-game" style="display:none;">Làm lại từ đầu ↻</button>
+             <button id="btn-open-letter">Mở Thư Đầu Năm 💌</button>
+             <button id="btn-reset-game" class="restart-style" style="display: none; margin-top: 15px;">Bắt đầu lại từ đầu ↻</button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.10.1/tsparticles.confetti.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

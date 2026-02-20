@@ -204,7 +204,6 @@ let heartInterval;
 // --- INIT & RESIZE ---
 function resize() {
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    overlayCanvas.width = 160; overlayCanvas.height = 120;
 }
 let resizeTimeout;
 window.addEventListener('resize', () => {
@@ -286,7 +285,9 @@ class Firework {
                 const hue = 320 + Math.random() * 40; 
                 const p = new Particle(this.x, this.y, hue, 0); 
                 
-                const scale = 1.0 + Math.random() * 0.4; 
+                // Đã sửa: Thu nhỏ biên độ bay của trái tim trên màn hình nhỏ
+                const isMobile = window.innerWidth < 768;
+                const scale = (isMobile ? 0.6 : 1.0) + Math.random() * (isMobile ? 0.2 : 0.4); 
                 p.vx = dx * scale; 
                 p.vy = (dy - 5) * scale;
                 
@@ -301,8 +302,7 @@ class Firework {
         } else {
             let count = (this.type === 'finale-round') ? 300 : 40; 
             
-            // --- SỬA ĐỔI Ở ĐÂY: TĂNG ĐỘ LOE (SPREAD) ---
-            // Cũ: 4 -> Mới: 9 (Sẽ bung rộng gấp đôi, bao phủ màn hình tốt hơn)
+            // TĂNG ĐỘ LOE (SPREAD)
             let spread = (this.type === 'finale-round') ? 9 : 3;
             
             for(let i=0; i<count; i++) this.particles.push(new Particle(this.x, this.y, this.hue, spread));
@@ -342,7 +342,10 @@ class Particle {
         ctx.fillStyle = `hsla(${this.hue}, 100%, 60%, ${currentAlpha})`;
 
         if (this.isHeart) {
-            const size = 2.0; 
+            // Đã sửa: Tính toán kích thước điểm hạt vẽ trái tim nhỏ lại cho di động
+            const isMobile = window.innerWidth < 768;
+            const size = isMobile ? 1.0 : 2.0; 
+            
             ctx.translate(this.x, this.y);
             ctx.beginPath();
             ctx.moveTo(0, 0);
@@ -376,7 +379,9 @@ function animateCanvas() {
         fireworks.push(new Firework(Math.random() * canvas.width, canvas.height, Math.random() * (canvas.height * 0.5), 'normal'));
     }
     
-    if(finaleOngoing && Math.random() < 0.03) { 
+    // Đã sửa: Giảm tỉ lệ pháo hoa ở background để tối ưu cấu hình trên di động
+    const finaleFireworkChance = window.innerWidth < 768 ? 0.015 : 0.03;
+    if(finaleOngoing && Math.random() < finaleFireworkChance) { 
         fireworks.push(new Firework(
             Math.random() * canvas.width, 
             canvas.height, 
@@ -412,7 +417,6 @@ function preloadAllImages() {
     });
 }
 
-/* --- Thay thế đoạn startBtn.addEventListener cũ --- */
 startBtn.addEventListener('click', async () => {
     // Mở khóa âm thanh cho Mobile
     Object.values(AUDIO).forEach(s => {
@@ -455,7 +459,6 @@ async function initCamera() {
         hands.setOptions({ 
             maxNumHands: 1, 
             // TỐI ƯU: Mobile dùng 0 (Lite) để nhanh, PC dùng 1 (Full) để chính xác
-            // Vẫn hiển thị khung xương tay bình thường
             modelComplexity: isMobile ? 0 : 1, 
             minDetectionConfidence: 0.5, 
             minTrackingConfidence: 0.5 
@@ -489,16 +492,19 @@ function countFingers(landmarks) {
 }
 
 function onResults(results) {
+    // Cập nhật độ phân giải nội bộ của canvas khớp với video gốc
+    if (overlayCanvas.width !== results.image.width) {
+        overlayCanvas.width = results.image.width;
+        overlayCanvas.height = results.image.height;
+    }
     // Lưu trạng thái canvas
     overlayCtx.save();
     
     // Xóa khung hình cũ
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
-    // --- DÒNG QUAN TRỌNG NHẤT ĐỂ KHẮC PHỤC MÀN HÌNH ĐEN ---
     // Vẽ hình ảnh từ video camera thật làm phông nền lên canvas
     overlayCtx.drawImage(results.image, 0, 0, overlayCanvas.width, overlayCanvas.height);
-    // ------------------------------------------------------
 
     // Nếu đang mở thiệp hoặc màn hình pháo hoa thì dừng không vẽ tay nữa
     if(appState === 'FINALE' || appState === 'LETTER') {
@@ -511,10 +517,9 @@ function onResults(results) {
         const lm = results.multiHandLandmarks[0];
         
         // Vẽ xương tay (màu xanh lá / đỏ)
-        drawConnectors(overlayCtx, lm, HAND_CONNECTIONS, {color: '#00ff00', lineWidth: 2});
-        drawLandmarks(overlayCtx, lm, {color: '#ff0000', lineWidth: 1});
+        drawConnectors(overlayCtx, lm, HAND_CONNECTIONS, {color: '#00ff00', lineWidth: 20});
+        drawLandmarks(overlayCtx, lm, {color: '#ff0000', lineWidth: 5, radius: 10});
         
-        // Logic đếm ngón tay của bạn (Giữ nguyên)
         const fingers = countFingers(lm);
         processGameLogic(fingers);
     } else {
